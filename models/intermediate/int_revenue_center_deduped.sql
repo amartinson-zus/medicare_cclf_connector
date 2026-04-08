@@ -41,6 +41,7 @@ with staged_data as (
     select
           cur_clm_uniq_id
         , clm_line_num
+        , bene_mbi_id
         , coalesce(beneficiary_xref.crnt_num, staged_data.bene_mbi_id) as current_bene_mbi_id
         , bene_hic_num
         , clm_type_cd
@@ -76,6 +77,7 @@ with staged_data as (
         partition by
               cur_clm_uniq_id
             , clm_line_num
+            , bene_mbi_id
             , current_bene_mbi_id
             , bene_hic_num
             , clm_type_cd
@@ -107,6 +109,7 @@ with staged_data as (
     select
           cur_clm_uniq_id
         , clm_line_num
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_type_cd
@@ -137,6 +140,7 @@ with staged_data as (
 select distinct
       cur_clm_uniq_id
     , clm_line_num
+    , bene_mbi_id
     , current_bene_mbi_id
     , bene_hic_num
     , clm_type_cd

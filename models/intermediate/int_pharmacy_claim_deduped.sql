@@ -2,6 +2,7 @@ with sort_adjusted_claims as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -37,6 +38,7 @@ with sort_adjusted_claims as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -89,6 +91,8 @@ with sort_adjusted_claims as (
     select
           cur_clm_uniq_id as claim_id
         , 1 as claim_line_number
+        , bene_mbi_id as bene_mbi_id
+        , current_bene_mbi_id as current_bene_mbi_id
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
@@ -127,6 +131,8 @@ with sort_adjusted_claims as (
 select
       claim_id
     , claim_line_number
+    , bene_mbi_id
+    , current_bene_mbi_id
     , person_id
     , member_id
     , payer

@@ -1,27 +1,3 @@
-with unioned as (
-
-    {{ dbt_utils.union_relations(
-
-        relations=[
-              ref('int_dme_claim_deduped')
-            , ref('int_institutional_claim_deduped')
-            , ref('int_physician_claim_deduped')
-        ]
-
-    ) }}
-
-)
-
-, final_claims as (
-    SELECT
-    row_number() over (
-            partition by claim_id, claim_line_number
-            order by file_date, paid_date  desc
-          ) as row_num,
-        *
-    FROM unioned
-)
-
 select
       claim_id
     , claim_line_number
@@ -177,5 +153,5 @@ select
     , file_name
     , cast(file_date as date) as file_date
     , ingest_datetime
-from final_claims
+from {{ ref('int_medical_claim') }}
 where row_num = 1

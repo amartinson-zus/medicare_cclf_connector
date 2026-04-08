@@ -3,6 +3,7 @@ with diagnois_pivot as (
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
@@ -17,6 +18,7 @@ with diagnois_pivot as (
     group by
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
 
 ),
@@ -26,6 +28,7 @@ poa_pivot as (
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
@@ -40,6 +43,7 @@ poa_pivot as (
     group by
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
 
 )
@@ -47,6 +51,7 @@ poa_pivot as (
 select
       dx.cur_clm_uniq_id
     , dx.bene_mbi_id
+    , dx.current_bene_mbi_id
     , dx.dgns_prcdr_icd_ind
     , dx.diagnosis_code_1
     , dx.diagnosis_code_2
@@ -100,4 +105,7 @@ select
     , poa.diagnosis_poa_25
 from diagnois_pivot as dx
     inner join poa_pivot as poa
-	    on dx.cur_clm_uniq_id = poa.cur_clm_uniq_id
+        on dx.cur_clm_uniq_id = poa.cur_clm_uniq_id
+        and dx.bene_mbi_id = poa.bene_mbi_id
+        and dx.current_bene_mbi_id = poa.current_bene_mbi_id
+        and dx.dgns_prcdr_icd_ind = poa.dgns_prcdr_icd_ind

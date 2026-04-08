@@ -70,7 +70,8 @@ with demographics as (
 , joined as (
 
     select
-          cast(enrollment.current_bene_mbi_id as {{ dbt.type_string() }} ) as person_id
+        row_number() over (partition by enrollment.current_bene_mbi_id, enrollment.enrollment_start_date order by enrollment.enrollment_end_date desc) as row_num
+        , cast(enrollment.current_bene_mbi_id as {{ dbt.type_string() }} ) as person_id
         , cast(enrollment.current_bene_mbi_id as {{ dbt.type_string() }} ) as member_id
         , cast(null as {{ dbt.type_string() }} ) as subscriber_id
         , case demographics.bene_sex_cd
@@ -193,3 +194,4 @@ select
     , file_date
     , ingest_datetime
 from joined
+WHERE row_num = 1

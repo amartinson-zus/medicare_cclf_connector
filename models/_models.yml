@@ -233,6 +233,14 @@ models:
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_int_input_layer{% else %}_int_input_layer{%- endif -%}
       alias: institutional_claim_deduped
 
+  - name: int_medical_claim
+    description: >
+      Combine part A institutional, part B physician, and part B DME claims to create a unified medical claim table.
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_int_input_layer{% else %}_int_input_layer{%- endif -%}
+      alias: int_medical_claim
+
   - name: int_pharmacy_claim_adr
     description: Applying adjustment logic for part D claims.
     config:

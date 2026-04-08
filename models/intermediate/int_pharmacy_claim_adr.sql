@@ -100,6 +100,7 @@ with staged_data as (
 
     select
           dedupe.cur_clm_uniq_id
+        , dedupe.bene_mbi_id
         , coalesce(beneficiary_xref.crnt_num, dedupe.bene_mbi_id) as current_bene_mbi_id
         , dedupe.bene_hic_num
         , dedupe.clm_line_ndc_cd
@@ -143,6 +144,7 @@ with staged_data as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -176,6 +178,7 @@ with staged_data as (
 
 select
       cur_clm_uniq_id
+    , bene_mbi_id
     , current_bene_mbi_id
     , bene_hic_num
     , clm_line_ndc_cd

@@ -19,6 +19,36 @@ with staged_data as (
 
 )
 
+, beneficiary_xref as (
+
+    select * from {{ ref('int_beneficiary_xref_deduped') }}
+
+)
+
+, add_current_mbi as (
+
+    select
+          staged_data.cur_clm_uniq_id
+        , staged_data.bene_mbi_id
+        , coalesce(beneficiary_xref.crnt_num, staged_data.bene_mbi_id) as current_bene_mbi_id
+        , staged_data.bene_hic_num
+        , staged_data.clm_type_cd
+        , staged_data.clm_val_sqnc_num
+        , staged_data.clm_prcdr_cd
+        , staged_data.clm_prcdr_prfrm_dt
+        , staged_data.bene_eqtbl_bic_hicn_num
+        , staged_data.prvdr_oscar_num
+        , staged_data.clm_from_dt
+        , staged_data.clm_thru_dt
+        , staged_data.dgns_prcdr_icd_ind
+        , staged_data.file_name
+        , staged_data.file_date
+    from staged_data
+    left join beneficiary_xref
+        on staged_data.bene_mbi_id = beneficiary_xref.prvs_num
+
+)
+
 /* dedupe full rows that may appear in multiple files */
 , add_row_num as (
 
@@ -26,6 +56,7 @@ with staged_data as (
         partition by
               cur_clm_uniq_id
             , bene_mbi_id
+            , current_bene_mbi_id
             , bene_hic_num
             , clm_type_cd
             , clm_val_sqnc_num
@@ -38,7 +69,7 @@ with staged_data as (
             , dgns_prcdr_icd_ind
         order by file_date desc
         ) as row_num
-    from staged_data
+    from add_current_mbi
     where bene_mbi_id is not null /* added to prevent dupes during pivot */
 
 )
@@ -47,6 +78,7 @@ with staged_data as (
 select
       cur_clm_uniq_id
     , bene_mbi_id
+    , current_bene_mbi_id
     , bene_hic_num
     , clm_type_cd
     , clm_val_sqnc_num

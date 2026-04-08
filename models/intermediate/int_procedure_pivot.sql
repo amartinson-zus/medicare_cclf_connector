@@ -3,6 +3,7 @@ with procedure_pivot as (
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
@@ -17,6 +18,7 @@ with procedure_pivot as (
     group by
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
 
 ),
@@ -26,6 +28,7 @@ date_pivot as(
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
@@ -40,6 +43,7 @@ date_pivot as(
     group by
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
 
 )
@@ -47,6 +51,7 @@ date_pivot as(
 select
       px.cur_clm_uniq_id
     , px.bene_mbi_id
+    , px.current_bene_mbi_id
     , px.dgns_prcdr_icd_ind
     , px.procedure_code_1
     , px.procedure_code_2
@@ -100,4 +105,7 @@ select
     , d.procedure_date_25
 from procedure_pivot as px
     inner join date_pivot as d
-	    on px.cur_clm_uniq_id = d.cur_clm_uniq_id
+        on px.cur_clm_uniq_id = d.cur_clm_uniq_id
+        and px.bene_mbi_id = d.bene_mbi_id
+        and px.current_bene_mbi_id = d.current_bene_mbi_id
+        and px.dgns_prcdr_icd_ind = d.dgns_prcdr_icd_ind
