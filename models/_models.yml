@@ -293,6 +293,73 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: beneficiary_demographics
+    columns:
+      - name: bene_mbi_id
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: bene_hic_num
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: bene_fips_state_cd
+        description: "{{ doc('cclf_bene_fips_state_cd') }}"
+      - name: bene_fips_cnty_cd
+        description: "{{ doc('cclf_bene_fips_cnty_cd') }}"
+      - name: bene_zip_cd
+        description: "{{ doc('cclf_bene_zip_cd') }}"
+      - name: bene_dob
+        description: "{{ doc('cclf_bene_dob') }}"
+      - name: bene_sex_cd
+        description: "{{ doc('cclf_bene_sex_cd') }}"
+      - name: bene_race_cd
+        description: "{{ doc('cclf_bene_race_cd') }}"
+      - name: bene_age
+        description: "{{ doc('cclf_bene_age') }}"
+      - name: bene_mdcr_stus_cd
+        description: "{{ doc('cclf_bene_mdcr_stus_cd') }}"
+      - name: bene_dual_stus_cd
+        description: "{{ doc('cclf_bene_dual_stus_cd') }}"
+      - name: bene_death_dt
+        description: "{{ doc('cclf_bene_death_dt') }}"
+      - name: bene_rng_bgn_dt
+        description: "{{ doc('cclf_bene_rng_bgn_dt') }}"
+      - name: bene_rng_end_dt
+        description: "{{ doc('cclf_bene_rng_end_dt') }}"
+      - name: bene_1st_name
+        description: "{{ doc('cclf_bene_1st_name') }}"
+      - name: bene_midl_name
+        description: "{{ doc('cclf_bene_midl_name') }}"
+      - name: bene_last_name
+        description: "{{ doc('cclf_bene_last_name') }}"
+      - name: bene_orgnl_entlmt_rsn_cd
+        description: "{{ doc('cclf_bene_orgnl_entlmt_rsn_cd') }}"
+      - name: bene_entlmt_buyin_ind
+        description: "{{ doc('cclf_bene_entlmt_buyin_ind') }}"
+      - name: bene_part_a_enrlmt_bgn_dt
+        description: "{{ doc('cclf_bene_part_a_enrlmt_bgn_dt') }}"
+      - name: bene_part_b_enrlmt_bgn_dt
+        description: "{{ doc('cclf_bene_part_b_enrlmt_bgn_dt') }}"
+      - name: bene_line_1_adr
+        description: "{{ doc('cclf_bene_line_1_adr') }}"
+      - name: bene_line_2_adr
+        description: "{{ doc('cclf_bene_line_2_adr') }}"
+      - name: bene_line_3_adr
+        description: "{{ doc('cclf_bene_line_3_adr') }}"
+      - name: bene_line_4_adr
+        description: "{{ doc('cclf_bene_line_4_adr') }}"
+      - name: bene_line_5_adr
+        description: "{{ doc('cclf_bene_line_5_adr') }}"
+      - name: bene_line_6_adr
+        description: "{{ doc('cclf_bene_line_6_adr') }}"
+      - name: geo_zip_plc_name
+        description: "{{ doc('cclf_geo_zip_plc_name') }}"
+      - name: geo_usps_state_cd
+        description: "{{ doc('cclf_geo_usps_state_cd') }}"
+      - name: geo_zip5_cd
+        description: "{{ doc('cclf_geo_zip5_cd') }}"
+      - name: geo_zip4_cd
+        description: "{{ doc('cclf_geo_zip4_cd') }}"
+      - name: file_name
+        description: "{{ doc('cclf_file_name') }}"
+      - name: file_date
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_beneficiary_xref
     description: Staging model for beneficiary cross-reference (CCLF9).
@@ -300,6 +367,23 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: beneficiary_xref
+    columns:
+      - name: HICN_MBI_XREF_IND
+        description: "{{ doc('cclf_hicn_mbi_xref_ind') }}"
+      - name: CRNT_NUM
+        description: "{{ doc('cclf_crnt_num') }}"
+      - name: PRVS_NUM
+        description: "{{ doc('cclf_prvs_num') }}"
+      - name: PRVS_ID_EFCTV_DT
+        description: "{{ doc('cclf_prvs_id_efctv_dt') }}"
+      - name: PRVS_ID_OBSLT_DT
+        description: "{{ doc('cclf_prvs_id_obslt_dt') }}"
+      - name: BENE_RRB_NUM
+        description: "{{ doc('cclf_bene_rrb_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_enrollment
     description: >
@@ -309,6 +393,19 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: enrollment
+    columns:
+      - name: CURRENT_BENE_MBI_ID
+        description: "{{ doc('cclf_current_bene_mbi_id') }}"
+      - name: ENROLLMENT_START_DATE
+        description: "{{ doc('cclf_enrollment_start_date') }}"
+      - name: ENROLLMENT_END_DATE
+        description: "{{ doc('cclf_enrollment_end_date') }}"
+      - name: BENE_MEMBER_MONTH
+        description: "{{ doc('cclf_bene_member_month') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_parta_claims_header
     description: Staging model for parta claims header (CCLF1).
@@ -316,6 +413,101 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: parta_claims_header
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_prvdr_oscar_num') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_FROM_DT
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: CLM_THRU_DT
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: CLM_BILL_FAC_TYPE_CD
+        description: "{{ doc('cclf_clm_bill_fac_type_cd') }}"
+      - name: CLM_BILL_CLSFCTN_CD
+        description: "{{ doc('cclf_clm_bill_clsfctn_cd') }}"
+      - name: PRNCPL_DGNS_CD
+        description: "{{ doc('cclf_prncpl_dgns_cd') }}"
+      - name: ADMTG_DGNS_CD
+        description: "{{ doc('cclf_admtg_dgns_cd') }}"
+      - name: CLM_MDCR_NPMT_RSN_CD
+        description: "{{ doc('cclf_clm_mdcr_npmt_rsn_cd') }}"
+      - name: CLM_PMT_AMT
+        description: "{{ doc('cclf_clm_pmt_amt') }}"
+      - name: CLM_NCH_PRMRY_PYR_CD
+        description: "{{ doc('cclf_clm_nch_prmry_pyr_cd') }}"
+      - name: PRVDR_FAC_FIPS_ST_CD
+        description: "{{ doc('cclf_prvdr_fac_fips_st_cd') }}"
+      - name: BENE_PTNT_STUS_CD
+        description: "{{ doc('cclf_bene_ptnt_stus_cd') }}"
+      - name: DGNS_DRG_CD
+        description: "{{ doc('cclf_dgns_drg_cd') }}"
+      - name: CLM_OP_SRVC_TYPE_CD
+        description: "{{ doc('cclf_clm_op_srvc_type_cd') }}"
+      - name: FAC_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_fac_prvdr_npi_num') }}"
+      - name: OPRTG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_oprtg_prvdr_npi_num') }}"
+      - name: ATNDG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_atndg_prvdr_npi_num') }}"
+      - name: OTHR_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_othr_prvdr_npi_num') }}"
+      - name: CLM_ADJSMT_TYPE_CD
+        description: "{{ doc('cclf_clm_adjsmt_type_cd') }}"
+      - name: CLM_EFCTV_DT
+        description: "{{ doc('cclf_clm_efctv_dt') }}"
+      - name: CLM_IDR_LD_DT
+        description: "{{ doc('cclf_clm_idr_ld_dt') }}"
+      - name: BENE_EQTBL_BIC_HICN_NUM
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: CLM_ADMSN_TYPE_CD
+        description: "{{ doc('cclf_clm_admsn_type_cd') }}"
+      - name: CLM_ADMSN_SRC_CD
+        description: "{{ doc('cclf_clm_admsn_src_cd') }}"
+      - name: CLM_BILL_FREQ_CD
+        description: "{{ doc('cclf_clm_bill_freq_cd') }}"
+      - name: CLM_QUERY_CD
+        description: "{{ doc('cclf_clm_query_cd') }}"
+      - name: DGNS_PRCDR_ICD_IND
+        description: "{{ doc('cclf_dgns_prcdr_icd_ind') }}"
+      - name: CLM_MDCR_INSTNL_TOT_CHRG_AMT
+        description: "{{ doc('cclf_clm_mdcr_instnl_tot_chrg_amt') }}"
+      - name: CLM_MDCR_IP_PPS_CPTL_IME_AMT
+        description: "{{ doc('cclf_clm_mdcr_ip_pps_cptl_ime_amt') }}"
+      - name: CLM_OPRTNL_IME_AMT
+        description: "{{ doc('cclf_clm_oprtnl_ime_amt') }}"
+      - name: CLM_MDCR_IP_PPS_DSPRPRTNT_AMT
+        description: "{{ doc('cclf_clm_mdcr_ip_pps_dsprprtnt_amt') }}"
+      - name: CLM_HIPPS_UNCOMPD_CARE_AMT
+        description: "{{ doc('cclf_clm_hipps_uncompd_care_amt') }}"
+      - name: CLM_OPRTNL_DSPRPRTNT_AMT
+        description: "{{ doc('cclf_clm_oprtnl_dsprprtnt_amt') }}"
+      - name: CLM_BLG_PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_clm_blg_prvdr_oscar_num') }}"
+      - name: CLM_BLG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_blg_prvdr_npi_num') }}"
+      - name: CLM_OPRTG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_oprtg_prvdr_npi_num') }}"
+      - name: CLM_ATNDG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_atndg_prvdr_npi_num') }}"
+      - name: CLM_OTHR_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_othr_prvdr_npi_num') }}"
+      - name: CLM_CNTL_NUM
+        description: "{{ doc('cclf_clm_cntl_num') }}"
+      - name: CLM_ORG_CNTL_NUM
+        description: "{{ doc('cclf_clm_org_cntl_num') }}"
+      - name: CLM_CNTRCTR_NUM
+        description: "{{ doc('cclf_clm_cntrctr_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_parta_claims_revenue_center_detail
     description: Staging model for parta claims revenue center detail (CCLF2).
@@ -323,6 +515,57 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: parta_claims_revenue_center_detail
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: CLM_LINE_NUM
+        description: "{{ doc('cclf_clm_line_num') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_LINE_FROM_DT
+        description: "{{ doc('cclf_clm_line_from_dt') }}"
+      - name: CLM_LINE_THRU_DT
+        description: "{{ doc('cclf_clm_line_thru_dt') }}"
+      - name: CLM_LINE_PROD_REV_CTR_CD
+        description: "{{ doc('cclf_clm_line_prod_rev_ctr_cd') }}"
+      - name: CLM_LINE_INSTNL_REV_CTR_DT
+        description: "{{ doc('cclf_clm_line_instnl_rev_ctr_dt') }}"
+      - name: CLM_LINE_HCPCS_CD
+        description: "{{ doc('cclf_clm_line_hcpcs_cd') }}"
+      - name: BENE_EQTBL_BIC_HICN_NUM
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_prvdr_oscar_num') }}"
+      - name: CLM_FROM_DT
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: CLM_THRU_DT
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: CLM_LINE_SRVC_UNIT_QTY
+        description: "{{ doc('cclf_clm_line_srvc_unit_qty') }}"
+      - name: CLM_LINE_CVRD_PD_AMT
+        description: "{{ doc('cclf_clm_line_cvrd_pd_amt') }}"
+      - name: HCPCS_1_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_1_mdfr_cd') }}"
+      - name: HCPCS_2_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_2_mdfr_cd') }}"
+      - name: HCPCS_3_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_3_mdfr_cd') }}"
+      - name: HCPCS_4_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_4_mdfr_cd') }}"
+      - name: HCPCS_5_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_5_mdfr_cd') }}"
+      - name: CLM_REV_APC_HIPPS_CD
+        description: "{{ doc('cclf_clm_rev_apc_hipps_cd') }}"
+      - name: CLM_FAC_PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_clm_fac_prvdr_oscar_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_parta_diagnosis_code
     description: >
@@ -332,6 +575,39 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: parta_diagnosis_code
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_PROD_TYPE_CD
+        description: "{{ doc('cclf_clm_prod_type_cd') }}"
+      - name: CLM_VAL_SQNC_NUM
+        description: "{{ doc('cclf_clm_val_sqnc_num') }}"
+      - name: CLM_DGNS_CD
+        description: "{{ doc('cclf_clm_dgns_cd') }}"
+      - name: BENE_EQTBL_BIC_HICN_NUM
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_prvdr_oscar_num') }}"
+      - name: CLM_FROM_DT
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: CLM_THRU_DT
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: CLM_POA_IND
+        description: "{{ doc('cclf_clm_poa_ind') }}"
+      - name: DGNS_PRCDR_ICD_IND
+        description: "{{ doc('cclf_dgns_prcdr_icd_ind') }}"
+      - name: CLM_BLG_PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_clm_blg_prvdr_oscar_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_parta_procedure_code
     description: >
@@ -341,6 +617,37 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: parta_procedure_code
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_VAL_SQNC_NUM
+        description: "{{ doc('cclf_clm_val_sqnc_num') }}"
+      - name: CLM_PRCDR_CD
+        description: "{{ doc('cclf_clm_prcdr_cd') }}"
+      - name: CLM_PRCDR_PRFRM_DT
+        description: "{{ doc('cclf_clm_prcdr_prfrm_dt') }}"
+      - name: BENE_EQTBL_BIC_HICN_NUM
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_prvdr_oscar_num') }}"
+      - name: CLM_FROM_DT
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: CLM_THRU_DT
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: DGNS_PRCDR_ICD_IND
+        description: "{{ doc('cclf_dgns_prcdr_icd_ind') }}"
+      - name: CLM_BLG_PRVDR_OSCAR_NUM
+        description: "{{ doc('cclf_clm_blg_prvdr_oscar_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_partb_dme
     description: Staging model for partb dme (CCLF6).
@@ -348,6 +655,65 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: partb_dme
+    columns:
+      - name: cur_clm_uniq_id
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: clm_line_num
+        description: "{{ doc('cclf_clm_line_num') }}"
+      - name: bene_mbi_id
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: bene_hic_num
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: clm_type_cd
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: clm_from_dt
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: clm_thru_dt
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: clm_fed_type_srvc_cd
+        description: "{{ doc('cclf_clm_fed_type_srvc_cd') }}"
+      - name: clm_pos_cd
+        description: "{{ doc('cclf_clm_pos_cd') }}"
+      - name: clm_line_from_dt
+        description: "{{ doc('cclf_clm_line_from_dt') }}"
+      - name: clm_line_thru_dt
+        description: "{{ doc('cclf_clm_line_thru_dt') }}"
+      - name: clm_line_hcpcs_cd
+        description: "{{ doc('cclf_clm_line_hcpcs_cd') }}"
+      - name: clm_line_cvrd_pd_amt
+        description: "{{ doc('cclf_clm_line_cvrd_pd_amt') }}"
+      - name: clm_prmry_pyr_cd
+        description: "{{ doc('cclf_clm_prmry_pyr_cd') }}"
+      - name: payto_prvdr_npi_num
+        description: "{{ doc('cclf_payto_prvdr_npi_num') }}"
+      - name: ordrg_prvdr_npi_num
+        description: "{{ doc('cclf_ordrg_prvdr_npi_num') }}"
+      - name: clm_carr_pmt_dnl_cd
+        description: "{{ doc('cclf_clm_carr_pmt_dnl_cd') }}"
+      - name: clm_prcsg_ind_cd
+        description: "{{ doc('cclf_clm_prcsg_ind_cd') }}"
+      - name: clm_adjsmt_type_cd
+        description: "{{ doc('cclf_clm_adjsmt_type_cd') }}"
+      - name: clm_efctv_dt
+        description: "{{ doc('cclf_clm_efctv_dt') }}"
+      - name: clm_idr_ld_dt
+        description: "{{ doc('cclf_clm_idr_ld_dt') }}"
+      - name: clm_cntl_num
+        description: "{{ doc('cclf_clm_cntl_num') }}"
+      - name: bene_eqtbl_bic_hicn_num
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: clm_line_alowd_chrg_amt
+        description: "{{ doc('cclf_clm_line_alowd_chrg_amt') }}"
+      - name: clm_disp_cd
+        description: "{{ doc('cclf_clm_disp_cd') }}"
+      - name: clm_blg_prvdr_npi_num
+        description: "{{ doc('cclf_clm_blg_prvdr_npi_num') }}"
+      - name: clm_rfrg_prvdr_npi_num
+        description: "{{ doc('cclf_clm_rfrg_prvdr_npi_num') }}"
+      - name: file_name
+        description: "{{ doc('cclf_file_name') }}"
+      - name: file_date
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_partb_physicians
     description: Staging model for partb physicians (CCLF5).
@@ -355,6 +721,115 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: partb_physicians
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: CLM_LINE_NUM
+        description: "{{ doc('cclf_clm_line_num') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_FROM_DT
+        description: "{{ doc('cclf_clm_from_dt') }}"
+      - name: CLM_THRU_DT
+        description: "{{ doc('cclf_clm_thru_dt') }}"
+      - name: RNDRG_PRVDR_TYPE_CD
+        description: "{{ doc('cclf_rndrg_prvdr_type_cd') }}"
+      - name: RNDRG_PRVDR_FIPS_ST_CD
+        description: "{{ doc('cclf_rndrg_prvdr_fips_st_cd') }}"
+      - name: CLM_PRVDR_SPCLTY_CD
+        description: "{{ doc('cclf_clm_prvdr_spclty_cd') }}"
+      - name: CLM_FED_TYPE_SRVC_CD
+        description: "{{ doc('cclf_clm_fed_type_srvc_cd') }}"
+      - name: CLM_POS_CD
+        description: "{{ doc('cclf_clm_pos_cd') }}"
+      - name: CLM_LINE_FROM_DT
+        description: "{{ doc('cclf_clm_line_from_dt') }}"
+      - name: CLM_LINE_THRU_DT
+        description: "{{ doc('cclf_clm_line_thru_dt') }}"
+      - name: CLM_LINE_HCPCS_CD
+        description: "{{ doc('cclf_clm_line_hcpcs_cd') }}"
+      - name: CLM_LINE_CVRD_PD_AMT
+        description: "{{ doc('cclf_clm_line_cvrd_pd_amt') }}"
+      - name: CLM_LINE_PRMRY_PYR_CD
+        description: "{{ doc('cclf_clm_line_prmry_pyr_cd') }}"
+      - name: CLM_LINE_DGNS_CD
+        description: "{{ doc('cclf_clm_line_dgns_cd') }}"
+      - name: CLM_RNDRG_PRVDR_TAX_NUM
+        description: "{{ doc('cclf_clm_rndrg_prvdr_tax_num') }}"
+      - name: RNDRG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_rndrg_prvdr_npi_num') }}"
+      - name: CLM_CARR_PMT_DNL_CD
+        description: "{{ doc('cclf_clm_carr_pmt_dnl_cd') }}"
+      - name: CLM_PRCSG_IND_CD
+        description: "{{ doc('cclf_clm_prcsg_ind_cd') }}"
+      - name: CLM_ADJSMT_TYPE_CD
+        description: "{{ doc('cclf_clm_adjsmt_type_cd') }}"
+      - name: CLM_EFCTV_DT
+        description: "{{ doc('cclf_clm_efctv_dt') }}"
+      - name: CLM_IDR_LD_DT
+        description: "{{ doc('cclf_clm_idr_ld_dt') }}"
+      - name: CLM_CNTL_NUM
+        description: "{{ doc('cclf_clm_cntl_num') }}"
+      - name: BENE_EQTBL_BIC_HICN_NUM
+        description: "{{ doc('cclf_bene_eqtbl_bic_hicn_num') }}"
+      - name: CLM_LINE_ALOWD_CHRG_AMT
+        description: "{{ doc('cclf_clm_line_alowd_chrg_amt') }}"
+      - name: CLM_LINE_SRVC_UNIT_QTY
+        description: "{{ doc('cclf_clm_line_srvc_unit_qty') }}"
+      - name: HCPCS_1_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_1_mdfr_cd') }}"
+      - name: HCPCS_2_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_2_mdfr_cd') }}"
+      - name: HCPCS_3_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_3_mdfr_cd') }}"
+      - name: HCPCS_4_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_4_mdfr_cd') }}"
+      - name: HCPCS_5_MDFR_CD
+        description: "{{ doc('cclf_hcpcs_5_mdfr_cd') }}"
+      - name: CLM_DISP_CD
+        description: "{{ doc('cclf_clm_disp_cd') }}"
+      - name: CLM_DGNS_1_CD
+        description: "{{ doc('cclf_clm_dgns_1_cd') }}"
+      - name: CLM_DGNS_2_CD
+        description: "{{ doc('cclf_clm_dgns_2_cd') }}"
+      - name: CLM_DGNS_3_CD
+        description: "{{ doc('cclf_clm_dgns_3_cd') }}"
+      - name: CLM_DGNS_4_CD
+        description: "{{ doc('cclf_clm_dgns_4_cd') }}"
+      - name: CLM_DGNS_5_CD
+        description: "{{ doc('cclf_clm_dgns_5_cd') }}"
+      - name: CLM_DGNS_6_CD
+        description: "{{ doc('cclf_clm_dgns_6_cd') }}"
+      - name: CLM_DGNS_7_CD
+        description: "{{ doc('cclf_clm_dgns_7_cd') }}"
+      - name: CLM_DGNS_8_CD
+        description: "{{ doc('cclf_clm_dgns_8_cd') }}"
+      - name: DGNS_PRCDR_ICD_IND
+        description: "{{ doc('cclf_dgns_prcdr_icd_ind') }}"
+      - name: CLM_DGNS_9_CD
+        description: "{{ doc('cclf_clm_dgns_9_cd') }}"
+      - name: CLM_DGNS_10_CD
+        description: "{{ doc('cclf_clm_dgns_10_cd') }}"
+      - name: CLM_DGNS_11_CD
+        description: "{{ doc('cclf_clm_dgns_11_cd') }}"
+      - name: CLM_DGNS_12_CD
+        description: "{{ doc('cclf_clm_dgns_12_cd') }}"
+      - name: HCPCS_BETOS_CD
+        description: "{{ doc('cclf_hcpcs_betos_cd') }}"
+      - name: CLM_RNDRG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_rndrg_prvdr_npi_num') }}"
+      - name: CLM_RFRG_PRVDR_NPI_NUM
+        description: "{{ doc('cclf_clm_rfrg_prvdr_npi_num') }}"
+      - name: CLM_CNTRCTR_NUM
+        description: "{{ doc('cclf_clm_cntrctr_num') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"
 
   - name: stg_partd_claims
     description: Staging model for partd prescription drug information (CCLF7).
@@ -362,3 +837,50 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}_{{var('tuva_schema_prefix')}}_stg_input_layer{% else %}_stg_input_layer{%- endif -%}
       alias: partd_claims
+    columns:
+      - name: CUR_CLM_UNIQ_ID
+        description: "{{ doc('cclf_cur_clm_uniq_id') }}"
+      - name: BENE_MBI_ID
+        description: "{{ doc('cclf_bene_mbi_id') }}"
+      - name: BENE_HIC_NUM
+        description: "{{ doc('cclf_bene_hic_num') }}"
+      - name: CLM_LINE_NDC_CD
+        description: "{{ doc('cclf_clm_line_ndc_cd') }}"
+      - name: CLM_TYPE_CD
+        description: "{{ doc('cclf_clm_type_cd') }}"
+      - name: CLM_LINE_FROM_DT
+        description: "{{ doc('cclf_clm_line_from_dt') }}"
+      - name: PRVDR_SRVC_ID_QLFYR_CD
+        description: "{{ doc('cclf_prvdr_srvc_id_qlfyr_cd') }}"
+      - name: CLM_SRVC_PRVDR_GNRC_ID_NUM
+        description: "{{ doc('cclf_clm_srvc_prvdr_gnrc_id_num') }}"
+      - name: CLM_DSPNSNG_STUS_CD
+        description: "{{ doc('cclf_clm_dspnsng_stus_cd') }}"
+      - name: CLM_DAW_PROD_SLCTN_CD
+        description: "{{ doc('cclf_clm_daw_prod_slctn_cd') }}"
+      - name: CLM_LINE_SRVC_UNIT_QTY
+        description: "{{ doc('cclf_clm_line_srvc_unit_qty') }}"
+      - name: CLM_LINE_DAYS_SUPLY_QTY
+        description: "{{ doc('cclf_clm_line_days_suply_qty') }}"
+      - name: PRVDR_PRSBNG_ID_QLFYR_CD
+        description: "{{ doc('cclf_prvdr_prsbng_id_qlfyr_cd') }}"
+      - name: CLM_PRSBNG_PRVDR_GNRC_ID_NUM
+        description: "{{ doc('cclf_clm_prsbng_prvdr_gnrc_id_num') }}"
+      - name: CLM_LINE_BENE_PMT_AMT
+        description: "{{ doc('cclf_clm_line_bene_pmt_amt') }}"
+      - name: CLM_ADJSMT_TYPE_CD
+        description: "{{ doc('cclf_clm_adjsmt_type_cd') }}"
+      - name: CLM_EFCTV_DT
+        description: "{{ doc('cclf_clm_efctv_dt') }}"
+      - name: CLM_IDR_LD_DT
+        description: "{{ doc('cclf_clm_idr_ld_dt') }}"
+      - name: CLM_LINE_RX_SRVC_RFRNC_NUM
+        description: "{{ doc('cclf_clm_line_rx_srvc_rfrnc_num') }}"
+      - name: CLM_LINE_RX_FILL_NUM
+        description: "{{ doc('cclf_clm_line_rx_fill_num') }}"
+      - name: CLM_PHRMCY_SRVC_TYPE_CD
+        description: "{{ doc('cclf_clm_phrmcy_srvc_type_cd') }}"
+      - name: FILE_NAME
+        description: "{{ doc('cclf_file_name') }}"
+      - name: FILE_DATE
+        description: "{{ doc('cclf_file_date') }}"

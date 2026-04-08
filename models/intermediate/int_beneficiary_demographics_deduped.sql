@@ -1,40 +1,40 @@
 with staged_data as (
 
     select
-          bene_mbi_id
-        , bene_hic_num
-        , bene_fips_state_cd
-        , bene_fips_cnty_cd
-        , bene_zip_cd
-        , bene_dob
-        , bene_sex_cd
-        , bene_race_cd
-        , bene_age
-        , bene_mdcr_stus_cd
-        , bene_dual_stus_cd
-        , bene_death_dt
-        , bene_rng_bgn_dt
-        , bene_rng_end_dt
-        , bene_1st_name
-        , bene_midl_name
-        , bene_last_name
-        , bene_orgnl_entlmt_rsn_cd
-        , bene_entlmt_buyin_ind
-        , bene_part_a_enrlmt_bgn_dt
-        , bene_part_b_enrlmt_bgn_dt
-        , bene_line_1_adr
-        , bene_line_2_adr
-        , bene_line_3_adr
-        , bene_line_4_adr
-        , bene_line_5_adr
-        , bene_line_6_adr
-        , geo_zip_plc_name
-        , geo_usps_state_cd
-        , geo_zip5_cd
-        , geo_zip4_cd
+          cast(bene_mbi_id as {{ dbt.type_string() }}) as bene_mbi_id
+        , cast(bene_hic_num as {{ dbt.type_string() }}) as bene_hic_num
+        , cast(bene_fips_state_cd as {{ dbt.type_string() }}) as bene_fips_state_cd
+        , cast(bene_fips_cnty_cd as {{ dbt.type_string() }}) as bene_fips_cnty_cd
+        , cast(bene_zip_cd as {{ dbt.type_string() }}) as bene_zip_cd
+        , cast(bene_dob as {{ dbt.type_string() }}) as bene_dob
+        , cast(bene_sex_cd as {{ dbt.type_string() }}) as bene_sex_cd
+        , cast(bene_race_cd as {{ dbt.type_string() }}) as bene_race_cd
+        , cast(bene_age as {{ dbt.type_string() }}) as bene_age
+        , cast(bene_mdcr_stus_cd as {{ dbt.type_string() }}) as bene_mdcr_stus_cd
+        , cast(bene_dual_stus_cd as {{ dbt.type_string() }}) as bene_dual_stus_cd
+        , cast(bene_death_dt as {{ dbt.type_string() }}) as bene_death_dt
+        , cast(bene_rng_bgn_dt as {{ dbt.type_string() }}) as bene_rng_bgn_dt
+        , cast(bene_rng_end_dt as {{ dbt.type_string() }}) as bene_rng_end_dt
+        , cast(bene_1st_name as {{ dbt.type_string() }}) as bene_1st_name
+        , cast(bene_midl_name as {{ dbt.type_string() }}) as bene_midl_name
+        , cast(bene_last_name as {{ dbt.type_string() }}) as bene_last_name
+        , cast(bene_orgnl_entlmt_rsn_cd as {{ dbt.type_string() }}) as bene_orgnl_entlmt_rsn_cd
+        , cast(bene_entlmt_buyin_ind as {{ dbt.type_string() }}) as bene_entlmt_buyin_ind
+        , cast(bene_part_a_enrlmt_bgn_dt as {{ dbt.type_string() }}) as bene_part_a_enrlmt_bgn_dt
+        , cast(bene_part_b_enrlmt_bgn_dt as {{ dbt.type_string() }}) as bene_part_b_enrlmt_bgn_dt
+        , cast(bene_line_1_adr as {{ dbt.type_string() }}) as bene_line_1_adr
+        , cast(bene_line_2_adr as {{ dbt.type_string() }}) as bene_line_2_adr
+        , cast(bene_line_3_adr as {{ dbt.type_string() }}) as bene_line_3_adr
+        , cast(bene_line_4_adr as {{ dbt.type_string() }}) as bene_line_4_adr
+        , cast(bene_line_5_adr as {{ dbt.type_string() }}) as bene_line_5_adr
+        , cast(bene_line_6_adr as {{ dbt.type_string() }}) as bene_line_6_adr
+        , cast(geo_zip_plc_name as {{ dbt.type_string() }}) as geo_zip_plc_name
+        , cast(geo_usps_state_cd as {{ dbt.type_string() }}) as geo_usps_state_cd
+        , cast(geo_zip5_cd as {{ dbt.type_string() }}) as geo_zip5_cd
+        , cast(geo_zip4_cd as {{ dbt.type_string() }}) as geo_zip4_cd
         , file_name
         , file_date
-        , {{ date_from_parts('year(file_date)', 'month(file_date)', 1) }} as coverage_month
+        , cast({{ date_from_parts('year(file_date)', 'month(file_date)', 1) }} as {{ dbt.type_string() }}) as coverage_month
     from {{ ref('stg_beneficiary_demographics') }}
 
 )
@@ -186,21 +186,21 @@ select
     , bene_fips_state_cd
     , bene_fips_cnty_cd
     , bene_zip_cd
-    , bene_dob
+    , {{ try_to_cast_date('bene_dob') }} as bene_dob
     , bene_sex_cd
     , bene_race_cd
     , bene_mdcr_stus_cd
     , bene_dual_stus_cd
-    , bene_death_dt
-    , bene_rng_bgn_dt
-    , bene_rng_end_dt
+    , {{ try_to_cast_date('bene_death_dt') }} as bene_death_dt
+    , {{ try_to_cast_date('bene_rng_bgn_dt') }} as bene_rng_bgn_dt
+    , {{ try_to_cast_date('bene_rng_end_dt') }} as bene_rng_end_dt
     , bene_1st_name
     , bene_midl_name
     , bene_last_name
     , bene_orgnl_entlmt_rsn_cd
     , bene_entlmt_buyin_ind
-    , bene_part_a_enrlmt_bgn_dt
-    , bene_part_b_enrlmt_bgn_dt
+    , {{ try_to_cast_date('bene_part_a_enrlmt_bgn_dt') }} as bene_part_a_enrlmt_bgn_dt
+    , {{ try_to_cast_date('bene_part_b_enrlmt_bgn_dt') }} as bene_part_b_enrlmt_bgn_dt
     , bene_line_1_adr
     , bene_line_2_adr
     , bene_line_3_adr
@@ -211,7 +211,7 @@ select
     , geo_usps_state_cd
     , geo_zip5_cd
     , geo_zip4_cd
-    , coverage_month
+    , {{ try_to_cast_date('coverage_month') }} as coverage_month
     , file_name
     , file_date
 from get_latest_mbi

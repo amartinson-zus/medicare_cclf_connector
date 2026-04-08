@@ -12,17 +12,17 @@ select
     , BENE_MBI_ID
     , BENE_HIC_NUM
     , CLM_TYPE_CD
-    , CLM_FROM_DT
-    , CLM_THRU_DT
+    , {{ try_to_cast_date('CLM_FROM_DT') }} as CLM_FROM_DT
+    , {{ try_to_cast_date('CLM_THRU_DT') }} as CLM_THRU_DT
     , RNDRG_PRVDR_TYPE_CD
     , RNDRG_PRVDR_FIPS_ST_CD
     , CLM_PRVDR_SPCLTY_CD
     , CLM_FED_TYPE_SRVC_CD
     , CLM_POS_CD
-    , CLM_LINE_FROM_DT
-    , CLM_LINE_THRU_DT
+    , {{ try_to_cast_date('CLM_LINE_FROM_DT') }} as CLM_LINE_FROM_DT
+    , {{ try_to_cast_date('CLM_LINE_THRU_DT') }} as CLM_LINE_THRU_DT
     , CLM_LINE_HCPCS_CD
-    , CLM_LINE_CVRD_PD_AMT
+    , {{ try_to_cast_numeric('CLM_LINE_CVRD_PD_AMT') }} as CLM_LINE_CVRD_PD_AMT
     , CLM_LINE_PRMRY_PYR_CD
     , CLM_LINE_DGNS_CD
     , CLM_RNDRG_PRVDR_TAX_NUM
@@ -30,12 +30,12 @@ select
     , CLM_CARR_PMT_DNL_CD
     , CLM_PRCSG_IND_CD
     , CLM_ADJSMT_TYPE_CD
-    , CLM_EFCTV_DT
-    , CLM_IDR_LD_DT
+    , {{ try_to_cast_date('CLM_EFCTV_DT') }} as CLM_EFCTV_DT
+    , {{ try_to_cast_date('CLM_IDR_LD_DT') }} as CLM_IDR_LD_DT
     , CLM_CNTL_NUM
     , BENE_EQTBL_BIC_HICN_NUM
-    , CLM_LINE_ALOWD_CHRG_AMT
-    , CLM_LINE_SRVC_UNIT_QTY
+    , {{ try_to_cast_numeric('CLM_LINE_ALOWD_CHRG_AMT') }} as CLM_LINE_ALOWD_CHRG_AMT
+    , {{ try_to_cast_numeric('CLM_LINE_SRVC_UNIT_QTY') }} as CLM_LINE_SRVC_UNIT_QTY
     , HCPCS_1_MDFR_CD
     , HCPCS_2_MDFR_CD
     , HCPCS_3_MDFR_CD
@@ -60,5 +60,5 @@ select
     , CLM_RFRG_PRVDR_NPI_NUM
     , CLM_CNTRCTR_NUM
     , FILE_NAME
-    , FILE_DATE
+    , {{ try_to_cast_date('FILE_DATE') }} as FILE_DATE
 from partb_physicians

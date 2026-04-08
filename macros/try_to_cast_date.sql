@@ -6,6 +6,12 @@
 
 #}
 
+{%- macro clean_source_value(column_name) -%}
+
+    nullif(trim(cast({{ column_name }} as {{ dbt.type_string() }})), '')
+
+{%- endmacro -%}
+
 {%- macro try_to_cast_date(column_name, date_format='YYYY-MM-DD') -%}
 
     {{ return(adapter.dispatch('try_to_cast_date')(column_name, date_format)) }}
@@ -14,86 +20,111 @@
 
 {%- macro bigquery__try_to_cast_date(column_name, date_format) -%}
 
+    {%- set cleaned_value -%}
+    {{ clean_source_value(column_name) }}
+    {%- endset -%}
+
+    case
+      when {{ cleaned_value }} in ('1000-01-01', '9999-12-31', '10000101', '99991231')
+        then cast(null as date)
     {%- if date_format == 'YYYY-MM-DD HH:MI:SS' -%}
-    safe_cast( date( {{ column_name }} ) as date )
+      else safe_cast(date({{ cleaned_value }}) as date)
     {%- else -%}
-    safe_cast( {{ column_name }} as date )
+      else safe_cast({{ cleaned_value }} as date)
     {%- endif -%}
+    end
 
 {%- endmacro -%}
 
 {%- macro default__try_to_cast_date(column_name, date_format) -%}
 
-    try_cast( {{ column_name }} as date )
+    {%- set cleaned_value -%}
+    {{ clean_source_value(column_name) }}
+    {%- endset -%}
+
+    case
+      when {{ cleaned_value }} in ('1000-01-01', '9999-12-31', '10000101', '99991231')
+        then cast(null as date)
+      else try_cast( {{ cleaned_value }} as date )
+    end
 
 {%- endmacro -%}
 
 {%- macro postgres__try_to_cast_date(column_name, date_format) -%}
 
-    {%- if date_format == 'YYYY-MM-DD' -%}
+    {%- set cleaned_value -%}
+    {{ clean_source_value(column_name) }}
+    {%- endset -%}
+
     case
-      when {{ column_name }} similar to '[0-9]{4}-[0-9]{2}-[0-9]{2}'
-      then to_date( {{ column_name }}, 'YYYY-MM-DD')
+      when {{ cleaned_value }} in ('1000-01-01', '9999-12-31', '10000101', '99991231')
+        then date(NULL)
+    {%- if date_format == 'YYYY-MM-DD' -%}
+      when {{ cleaned_value }} similar to '[0-9]{4}-[0-9]{2}-[0-9]{2}'
+      then to_date( {{ cleaned_value }}, 'YYYY-MM-DD')
       else date(NULL)
     end
     {%- elif date_format == 'YYYYMMDD' -%}
-    case
-      when {{ column_name }} similar to '[0-9]{4}[0-9]{2}[0-9]{2}'
-      then to_date( {{ column_name }}, 'YYYYMMDD')
+      when {{ cleaned_value }} similar to '[0-9]{4}[0-9]{2}[0-9]{2}'
+      then to_date( {{ cleaned_value }}, 'YYYYMMDD')
       else date(NULL)
-    end
     {%- elif date_format == 'MM/DD/YYYY' -%}
-    case
-      when {{ column_name }} similar to '[0-9]{2}/[0-9]{2}/[0-9]{4}'
-      then to_date( {{ column_name }}, 'MM/DD/YYYY')
+      when {{ cleaned_value }} similar to '[0-9]{2}/[0-9]{2}/[0-9]{4}'
+      then to_date( {{ cleaned_value }}, 'MM/DD/YYYY')
       else date(NULL)
-    end
     {%- elif date_format == 'YYYY-MM-DD HH:MI:SS' -%}
-    case
-      when {{ column_name }} similar to '[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}'
-      then to_date( {{ column_name }}, 'YYYY-MM-DD HH:MI:SS')
+      when {{ cleaned_value }} similar to '[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}'
+      then to_date( {{ cleaned_value }}, 'YYYY-MM-DD HH:MI:SS')
       else date(NULL)
-    end
     {%- else -%}
-    date(NULL)
+      else date(NULL)
     {%- endif -%}
+    end
 
 {%- endmacro -%}
 
 {%- macro redshift__try_to_cast_date(column_name, date_format) -%}
 
+    {%- set cleaned_value -%}
+    {{ clean_source_value(column_name) }}
+    {%- endset -%}
+
+    case
+      when {{ cleaned_value }} in ('1000-01-01', '9999-12-31', '10000101', '99991231')
+        then date(NULL)
     {%- if date_format == 'YYYY-MM-DD' -%}
-    case
-      when {{ column_name }} similar to '\\d{4}-\\d{2}-\\d{2}'
-      then to_date( {{ column_name }}, 'YYYY-MM-DD')
+      when {{ cleaned_value }} similar to '\\d{4}-\\d{2}-\\d{2}'
+      then to_date( {{ cleaned_value }}, 'YYYY-MM-DD')
       else date(NULL)
-    end
     {%- elif date_format == 'YYYYMMDD' -%}
-    case
-      when {{ column_name }} similar to '\\d{4}\\d{2}\\d{2}'
-      then to_date( {{ column_name }}, 'YYYYMMDD')
+      when {{ cleaned_value }} similar to '\\d{4}\\d{2}\\d{2}'
+      then to_date( {{ cleaned_value }}, 'YYYYMMDD')
       else date(NULL)
-    end
     {%- elif date_format == 'MM/DD/YYYY' -%}
-    case
-      when {{ column_name }} similar to '\\d{2}/\\d{2}/\\d{4}'
-      then to_date( {{ column_name }}, 'MM/DD/YYYY')
+      when {{ cleaned_value }} similar to '\\d{2}/\\d{2}/\\d{4}'
+      then to_date( {{ cleaned_value }}, 'MM/DD/YYYY')
       else date(NULL)
-    end
     {%- elif date_format == 'YYYY-MM-DD HH:MI:SS' -%}
-    case
-      when {{ column_name }} similar to '\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}'
-      then to_date( {{ column_name }}, 'YYYY-MM-DD HH:MI:SS')
+      when {{ cleaned_value }} similar to '\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}'
+      then to_date( {{ cleaned_value }}, 'YYYY-MM-DD HH:MI:SS')
       else date(NULL)
-    end
     {%- else -%}
-    date(NULL)
+      else date(NULL)
     {%- endif -%}
+    end
 
 {%- endmacro -%}
 
 {%- macro snowflake__try_to_cast_date(column_name, date_format) -%}
 
-    try_cast( {{ column_name }} as date )
+    {%- set cleaned_value -%}
+    {{ clean_source_value(column_name) }}
+    {%- endset -%}
+
+    case
+      when {{ cleaned_value }} in ('1000-01-01', '9999-12-31', '10000101', '99991231')
+        then cast(null as date)
+      else try_cast( {{ cleaned_value }} as date )
+    end
 
 {%- endmacro -%}

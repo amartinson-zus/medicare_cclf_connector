@@ -29,7 +29,7 @@ select
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , claim_start_date
     , claim_end_date
     , claim_line_start_date

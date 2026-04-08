@@ -92,7 +92,7 @@ with sort_adjusted_claims as (
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare'as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast('medicare'as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when prvdr_prsbng_id_qlfyr_cd in ('1', '01')
             then clm_prsbng_prvdr_gnrc_id_num
@@ -103,17 +103,17 @@ with sort_adjusted_claims as (
             then clm_srvc_prvdr_gnrc_id_num
             else null
             end as dispensing_provider_npi
-        , clm_line_from_dt as dispensing_date
+        , {{ try_to_cast_date('clm_line_from_dt') }} as dispensing_date
         , clm_line_ndc_cd as ndc_code
-        , clm_line_srvc_unit_qty as quantity
-        , clm_line_days_suply_qty as days_supply
+        , {{ try_to_cast_numeric('clm_line_srvc_unit_qty') }} as quantity
+        , {{ try_to_cast_int('clm_line_days_suply_qty') }} as days_supply
         , clm_line_rx_fill_num as refills
-        , clm_line_from_dt as paid_date
-        , clm_line_bene_pmt_amt as paid_amount
+        , {{ try_to_cast_date('clm_line_from_dt') }} as paid_date
+        , {{ try_to_cast_numeric('clm_line_bene_pmt_amt') }} as paid_amount
         , cast(null as {{ dbt.type_string() }} ) as allowed_amount
         , cast(null as {{ dbt.type_string() }} ) as charge_amount
         , cast(null as {{ dbt.type_string() }} ) as coinsurance_amount
-        , clm_line_bene_pmt_amt as copayment_amount
+        , {{ try_to_cast_numeric('clm_line_bene_pmt_amt') }} as copayment_amount
         , cast(null as {{ dbt.type_string() }} ) as deductible_amount
         , 1 as in_network_flag
         , cast('medicare cclf' as {{ dbt.type_string() }} ) as data_source
@@ -130,7 +130,7 @@ select
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , prescribing_provider_npi
     , dispensing_provider_npi
     , dispensing_date

@@ -113,7 +113,7 @@ with sort_adjusted_claims as (
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare'as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast('medicare'as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when clm_from_dt in ('1000-01-01', '9999-12-31') then null
             else clm_from_dt
@@ -282,7 +282,7 @@ with sort_adjusted_claims as (
         , cast(person_id as {{ dbt.type_string() }} ) as person_id
         , cast(member_id as {{ dbt.type_string() }} ) as member_id
         , cast(payer as {{ dbt.type_string() }} ) as payer
-        , cast({{ the_tuva_project.quote_column('plan') }} as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast({{ quote_column('plan') }} as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , {{ try_to_cast_date('claim_start_date', 'YYYY-MM-DD') }} as claim_start_date
         , {{ try_to_cast_date('claim_end_date', 'YYYY-MM-DD') }} as claim_end_date
         , {{ try_to_cast_date('claim_line_start_date', 'YYYY-MM-DD') }} as claim_line_start_date
@@ -434,7 +434,7 @@ select
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , claim_start_date
     , claim_end_date
     , claim_line_start_date
