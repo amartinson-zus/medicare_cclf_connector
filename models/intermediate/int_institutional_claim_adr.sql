@@ -46,15 +46,10 @@ with staged_data as (
         , cast(clm_cntl_num as {{ dbt.type_string() }}) as clm_cntl_num
         , cast(clm_org_cntl_num as {{ dbt.type_string() }}) as clm_org_cntl_num
         , cast(clm_cntrctr_num as {{ dbt.type_string() }}) as clm_cntrctr_num
+        , cast(current_bene_mbi_id as {{ dbt.type_string() }}) as current_bene_mbi_id
         , file_name
         , file_date
-    from {{ ref('stg_parta_claims_header') }}
-
-)
-
-, beneficiary_xref as (
-
-  select * from {{ ref('int_beneficiary_xref_deduped') }}
+    from {{ ref('int_parta_claims_header_normalized') }}
 
 )
 
@@ -125,6 +120,7 @@ with staged_data as (
           cur_clm_uniq_id as cur_clm_uniq_id
         , prvdr_oscar_num as ccn
         , bene_mbi_id
+        , current_bene_mbi_id
         /*, bene_hic_num*/
         , clm_type_cd
         , clm_from_dt
@@ -175,43 +171,6 @@ with staged_data as (
         and nullif(trim(clm_mdcr_npmt_rsn_cd),'') is null
 )
 
-/* coalesce current MBI from XREF if exists and MBI on claim */
-, add_current_mbi as (
-
-    select
-          dedupe.cur_clm_uniq_id
-        , dedupe.bene_mbi_id
-        , coalesce(beneficiary_xref.crnt_num, dedupe.bene_mbi_id) as current_bene_mbi_id
-        , dedupe.clm_from_dt
-        , dedupe.clm_thru_dt
-        , dedupe.clm_bill_fac_type_cd
-        , dedupe.clm_bill_clsfctn_cd
-        , dedupe.clm_pmt_amt
-        , dedupe.bene_ptnt_stus_cd
-        , dedupe.dgns_drg_cd
-        , dedupe.ccn
-        , dedupe.clm_type_cd        
-        , dedupe.fac_prvdr_npi_num
-        , dedupe.othr_prvdr_npi_num
-        , dedupe.atndg_prvdr_npi_num
-        , dedupe.oprtg_prvdr_npi_num  
-        , dedupe.clm_adjsmt_type_cd
-        , dedupe.clm_efctv_dt
-        , dedupe.clm_admsn_type_cd
-        , dedupe.clm_admsn_src_cd
-        , dedupe.clm_bill_freq_cd
-        , dedupe.dgns_prcdr_icd_ind
-        , dedupe.clm_mdcr_instnl_tot_chrg_amt
-        , dedupe.clm_blg_prvdr_oscar_num
-        , dedupe.file_name
-        , dedupe.file_date
-    from dedupe
-        left join beneficiary_xref
-            on dedupe.bene_mbi_id = beneficiary_xref.prvs_num
-
-
-)
-
 , normalized_data as (
 
     select *,
@@ -242,7 +201,7 @@ with staged_data as (
                 , clm_blg_prvdr_oscar_num
             order by file_date desc
         ) as normalized_row_num
-    from add_current_mbi
+    from dedupe
 
 )
 

@@ -50,15 +50,10 @@ with staged_data as (
         , cast(clm_dgns_11_cd as {{ dbt.type_string() }}) as clm_dgns_11_cd
         , cast(clm_dgns_12_cd as {{ dbt.type_string() }}) as clm_dgns_12_cd
         , cast(hcpcs_betos_cd as {{ dbt.type_string() }}) as hcpcs_betos_cd
+        , cast(current_bene_mbi_id as {{ dbt.type_string() }}) as current_bene_mbi_id
         , file_name
         , file_date
-    from {{ ref('stg_partb_physicians') }}
-
-)
-
-, beneficiary_xref as (
-
-  select * from {{ ref('int_beneficiary_xref_deduped') }}
+    from {{ ref('int_partb_physicians_normalized') }}
 
 )
 
@@ -129,6 +124,7 @@ with staged_data as (
           cur_clm_uniq_id
         , clm_line_num
         , bene_mbi_id
+        , current_bene_mbi_id
         /*, bene_hic_num*/
         , clm_type_cd
         , clm_from_dt
@@ -183,57 +179,6 @@ with staged_data as (
         and not ((upper(trim(clm_prcsg_ind_cd)) not in ('A','O','S','R')) or clm_carr_pmt_dnl_cd = '0')
 )
 
-/* coalesce current MBI from XREF if exists and MBI on claim */
-, add_current_mbi as (
-
-    select
-          dedupe.cur_clm_uniq_id
-        , dedupe.clm_line_num
-        , dedupe.bene_mbi_id
-        , coalesce(beneficiary_xref.crnt_num, dedupe.bene_mbi_id) as current_bene_mbi_id
-        , dedupe.clm_from_dt
-        , dedupe.clm_thru_dt
-        , dedupe.clm_pos_cd
-        , dedupe.clm_line_from_dt
-        , dedupe.clm_line_thru_dt
-        , dedupe.clm_line_hcpcs_cd
-        , dedupe.clm_line_cvrd_pd_amt
-        , dedupe.clm_rndrg_prvdr_tax_num
-        , dedupe.rndrg_prvdr_npi_num
-        , dedupe.clm_adjsmt_type_cd
-        , dedupe.clm_efctv_dt
-        , dedupe.clm_cntl_num
-        , dedupe.clm_line_alowd_chrg_amt
-        , dedupe.clm_line_srvc_unit_qty
-        , dedupe.clm_prvdr_spclty_cd
-        , dedupe.clm_type_cd
-        , dedupe.hcpcs_1_mdfr_cd
-        , dedupe.hcpcs_2_mdfr_cd
-        , dedupe.hcpcs_3_mdfr_cd
-        , dedupe.hcpcs_4_mdfr_cd
-        , dedupe.hcpcs_5_mdfr_cd
-        , dedupe.clm_dgns_1_cd
-        , dedupe.clm_dgns_2_cd
-        , dedupe.clm_dgns_3_cd
-        , dedupe.clm_dgns_4_cd
-        , dedupe.clm_dgns_5_cd
-        , dedupe.clm_dgns_6_cd
-        , dedupe.clm_dgns_7_cd
-        , dedupe.clm_dgns_8_cd
-        , dedupe.dgns_prcdr_icd_ind
-        , dedupe.clm_dgns_9_cd
-        , dedupe.clm_dgns_10_cd
-        , dedupe.clm_dgns_11_cd
-        , dedupe.clm_dgns_12_cd
-        , dedupe.file_name
-        , dedupe.file_date
-    from dedupe
-        left join beneficiary_xref
-            on dedupe.bene_mbi_id = beneficiary_xref.prvs_num
-
-
-)
-
 , normalized_data as (
 
     select *,
@@ -278,7 +223,7 @@ with staged_data as (
                 , clm_dgns_12_cd
             order by file_date desc
         ) as normalized_row_num
-    from add_current_mbi
+    from dedupe
 
 )
 

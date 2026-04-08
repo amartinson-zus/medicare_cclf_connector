@@ -728,5 +728,5 @@ from add_data_types
 
 )
 
-select distinct *
+select *
 from final_output

@@ -13,39 +13,10 @@ with staged_data as (
         , cast(clm_from_dt as {{ dbt.type_string() }}) as clm_from_dt
         , cast(clm_thru_dt as {{ dbt.type_string() }}) as clm_thru_dt
         , cast(dgns_prcdr_icd_ind as {{ dbt.type_string() }}) as dgns_prcdr_icd_ind
+        , cast(current_bene_mbi_id as {{ dbt.type_string() }}) as current_bene_mbi_id
         , file_name
         , file_date
-    from {{ ref('stg_parta_procedure_code') }}
-
-)
-
-, beneficiary_xref as (
-
-    select * from {{ ref('int_beneficiary_xref_deduped') }}
-
-)
-
-, add_current_mbi as (
-
-    select
-          staged_data.cur_clm_uniq_id
-        , staged_data.bene_mbi_id
-        , coalesce(beneficiary_xref.crnt_num, staged_data.bene_mbi_id) as current_bene_mbi_id
-        , staged_data.bene_hic_num
-        , staged_data.clm_type_cd
-        , staged_data.clm_val_sqnc_num
-        , staged_data.clm_prcdr_cd
-        , staged_data.clm_prcdr_prfrm_dt
-        , staged_data.bene_eqtbl_bic_hicn_num
-        , staged_data.prvdr_oscar_num
-        , staged_data.clm_from_dt
-        , staged_data.clm_thru_dt
-        , staged_data.dgns_prcdr_icd_ind
-        , staged_data.file_name
-        , staged_data.file_date
-    from staged_data
-    left join beneficiary_xref
-        on staged_data.bene_mbi_id = beneficiary_xref.prvs_num
+    from {{ ref('int_parta_procedure_code_normalized') }}
 
 )
 
@@ -68,7 +39,7 @@ with staged_data as (
             , dgns_prcdr_icd_ind
         order by file_date desc
         ) as row_num
-    from add_current_mbi
+    from staged_data
     where bene_mbi_id is not null /* added to prevent dupes during pivot */
 
 )

@@ -14,24 +14,13 @@ with enrollment as (
 
 )
 
-, beneficiary_xref as (
-
-    select
-          crnt_num
-        , prvs_num
-    from {{ ref('int_beneficiary_xref_deduped') }}
-
-)
-
 {% if var('member_months_enrollment',False) == false -%}
 
 select
-      coalesce(beneficiary_xref.crnt_num, enrollment.current_bene_mbi_id) as current_bene_mbi_id
+      enrollment.current_bene_mbi_id as current_bene_mbi_id
     , enrollment_start_date
     , enrollment_end_date
 from enrollment
-    left join beneficiary_xref
-        on enrollment.current_bene_mbi_id = beneficiary_xref.prvs_num
 
 {% else -%}
 
@@ -124,11 +113,9 @@ from enrollment
 )
 
 select
-      coalesce(beneficiary_xref.crnt_num, rollup_groups.current_bene_mbi_id) as current_bene_mbi_id
+      rollup_groups.current_bene_mbi_id as current_bene_mbi_id
     , enrollment_start_date
     , enrollment_end_date
 from rollup_groups
-    left join beneficiary_xref
-        on rollup_groups.current_bene_mbi_id = beneficiary_xref.prvs_num
 
 {%- endif %}
