@@ -128,23 +128,25 @@ with sort_adjusted_claims as (
     remove claim lines where claim ID+line number not unique
     even after adjustments have been applied
 */
-, claim_dupes as (
-
-    select cur_clm_uniq_id, clm_line_num
-    from filter_claims
-    group by cur_clm_uniq_id, clm_line_num
-    having count(*) > 1
-
-)
-
 , remove_dupes as (
 
-  select filter_claims.*
-    from filter_claims
-        left join claim_dupes
-            on filter_claims.cur_clm_uniq_id = claim_dupes.cur_clm_uniq_id
-            and filter_claims.clm_line_num = claim_dupes.clm_line_num
-    where claim_dupes.cur_clm_uniq_id is null
+    select *
+    from (
+        select
+              filter_claims.*
+            , row_number() over (
+                partition by
+                      cur_clm_uniq_id
+                    , clm_line_num
+                    , current_bene_mbi_id
+                order by
+                      file_date desc
+                    , clm_efctv_dt desc
+                    , file_name desc
+              ) as canonical_row_num
+        from filter_claims
+    ) ranked
+    where canonical_row_num = 1
 
 )
 

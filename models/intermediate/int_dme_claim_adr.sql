@@ -140,6 +140,33 @@ with staged_data as materialized (
 
 )
 
+, normalized_data as (
+
+    select *,
+        row_number() over (
+            partition by
+                  cur_clm_uniq_id
+                , clm_line_num
+                , current_bene_mbi_id
+                , clm_from_dt
+                , clm_thru_dt
+                , clm_pos_cd
+                , clm_line_from_dt
+                , clm_line_thru_dt
+                , clm_line_hcpcs_cd
+                , clm_line_cvrd_pd_amt
+                , payto_prvdr_npi_num
+                , ordrg_prvdr_npi_num
+                , clm_adjsmt_type_cd
+                , clm_efctv_dt
+                , clm_cntl_num
+                , clm_line_alowd_chrg_amt
+            order by file_date desc
+        ) as normalized_row_num
+    from add_current_mbi
+
+)
+
 /*
     1) apply adjustment logic by grouping part B DME claims by their natural keys:
      - CLM_CNTL_NUM
@@ -190,7 +217,8 @@ with staged_data as materialized (
                   clm_efctv_dt desc
                 , cur_clm_uniq_id desc
         ) as row_num
-    from add_current_mbi
+    from normalized_data
+    where normalized_row_num = 1
 
 )
 

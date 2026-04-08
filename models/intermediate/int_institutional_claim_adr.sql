@@ -212,6 +212,40 @@ with staged_data as (
 
 )
 
+, normalized_data as (
+
+    select *,
+        row_number() over (
+            partition by
+                  cur_clm_uniq_id
+                , ccn
+                , current_bene_mbi_id
+                , clm_type_cd
+                , clm_from_dt
+                , clm_thru_dt
+                , clm_bill_fac_type_cd
+                , clm_bill_clsfctn_cd
+                , clm_pmt_amt
+                , bene_ptnt_stus_cd
+                , dgns_drg_cd
+                , fac_prvdr_npi_num
+                , oprtg_prvdr_npi_num
+                , atndg_prvdr_npi_num
+                , othr_prvdr_npi_num
+                , clm_adjsmt_type_cd
+                , clm_efctv_dt
+                , clm_admsn_type_cd
+                , clm_admsn_src_cd
+                , clm_bill_freq_cd
+                , dgns_prcdr_icd_ind
+                , clm_mdcr_instnl_tot_chrg_amt
+                , clm_blg_prvdr_oscar_num
+            order by file_date desc
+        ) as normalized_row_num
+    from add_current_mbi
+
+)
+
 /*
     1) apply adjustment logic by grouping part A claims by their natural keys:
      - CLM_BLG_PRVDR_OSCAR_NUM
@@ -271,7 +305,8 @@ with staged_data as (
                   clm_efctv_dt desc
                 , cur_clm_uniq_id desc
         ) as row_num
-    from add_current_mbi
+    from normalized_data
+    where normalized_row_num = 1
 
 )
 

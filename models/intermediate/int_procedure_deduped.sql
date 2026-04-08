@@ -55,7 +55,6 @@ with staged_data as (
     select *, row_number() over (
         partition by
               cur_clm_uniq_id
-            , bene_mbi_id
             , current_bene_mbi_id
             , bene_hic_num
             , clm_type_cd

@@ -234,6 +234,54 @@ with staged_data as (
 
 )
 
+, normalized_data as (
+
+    select *,
+        row_number() over (
+            partition by
+                  cur_clm_uniq_id
+                , clm_line_num
+                , current_bene_mbi_id
+                , clm_type_cd
+                , clm_from_dt
+                , clm_thru_dt
+                , clm_pos_cd
+                , clm_line_from_dt
+                , clm_line_thru_dt
+                , clm_line_hcpcs_cd
+                , clm_line_cvrd_pd_amt
+                , clm_rndrg_prvdr_tax_num
+                , rndrg_prvdr_npi_num
+                , clm_adjsmt_type_cd
+                , clm_efctv_dt
+                , clm_cntl_num
+                , clm_line_alowd_chrg_amt
+                , clm_line_srvc_unit_qty
+                , clm_prvdr_spclty_cd
+                , hcpcs_1_mdfr_cd
+                , hcpcs_2_mdfr_cd
+                , hcpcs_3_mdfr_cd
+                , hcpcs_4_mdfr_cd
+                , hcpcs_5_mdfr_cd
+                , clm_dgns_1_cd
+                , clm_dgns_2_cd
+                , clm_dgns_3_cd
+                , clm_dgns_4_cd
+                , clm_dgns_5_cd
+                , clm_dgns_6_cd
+                , clm_dgns_7_cd
+                , clm_dgns_8_cd
+                , dgns_prcdr_icd_ind
+                , clm_dgns_9_cd
+                , clm_dgns_10_cd
+                , clm_dgns_11_cd
+                , clm_dgns_12_cd
+            order by file_date desc
+        ) as normalized_row_num
+    from add_current_mbi
+
+)
+
 /*
     1) apply adjustment logic by grouping part B Physician claims by their natural keys:
      - CLM_CNTL_NUM
@@ -305,7 +353,8 @@ with staged_data as (
                   clm_efctv_dt desc
                 , cur_clm_uniq_id desc
         ) as row_num
-    from add_current_mbi
+    from normalized_data
+    where normalized_row_num = 1
 
 )
 
