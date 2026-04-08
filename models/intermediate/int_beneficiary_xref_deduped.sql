@@ -66,7 +66,7 @@ with recursive staged_data as (
         on mbi_chain.crnt_num = latest_edges.prvs_num
     where mbi_chain.crnt_num <> latest_edges.crnt_num
       and mbi_chain.depth < 25
-      and strpos(mbi_chain.path, concat('|', coalesce(latest_edges.crnt_num, ''), '|')) = 0
+      and position(concat('|', coalesce(latest_edges.crnt_num, ''), '|') in mbi_chain.path) = 0
 
 )
 

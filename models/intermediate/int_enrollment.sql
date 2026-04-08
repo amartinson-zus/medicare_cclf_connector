@@ -5,16 +5,26 @@
 
 with enrollment as (
 
+    {% if var('cms_alr_connector', var('demo_data_only', false)) %}
+    select *
+    from {{ ref('stg_enrollment') }}
+    {% else %}
     select
           current_bene_mbi_id
         , enrollment_start_date
         , enrollment_end_date
         , bene_member_month
     from {{ ref('stg_enrollment') }}
+    {% endif %}
 
 )
 
-{% if var('member_months_enrollment',False) == false -%}
+{% if var('cms_alr_connector', var('demo_data_only', false)) %}
+
+select *
+from enrollment
+
+{% elif var('member_months_enrollment',False) == false -%}
 
 select
       enrollment.current_bene_mbi_id as current_bene_mbi_id

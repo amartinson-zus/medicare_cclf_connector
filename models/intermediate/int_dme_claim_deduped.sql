@@ -587,7 +587,7 @@ select
     , data_source
     , file_name
     , ingest_datetime
-    , {{ dbt_utils.surrogate_key([
+    , {{ dbt_utils.generate_surrogate_key([
         'claim_id',
         'claim_line_number',
         'bene_mbi_id',

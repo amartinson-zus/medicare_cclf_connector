@@ -2,17 +2,17 @@ name: 'medicare_cclf_connector'
 version: '0.1.2'
 config-version: 2
 
-profile: test
+profile: vbca
 
 vars:
   demo_data_only: false
 
   ## Set the database and schema where raw CCLF data is stored
-  input_database: test
+  input_database: vbca_tuva_dev
   input_schema: raw_data
 
   claims_enabled: true
-  provider_attribution_enabled: true
+  # provider_attribution_enabled: true
 
   ## Uncomment this variable if enrollment source is member months
 #  member_months_enrollment: true
