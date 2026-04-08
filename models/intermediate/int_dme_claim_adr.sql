@@ -1,4 +1,4 @@
-with staged_data as materialized (
+with staged_data as (
 
     select
           cast(cur_clm_uniq_id as {{ dbt.type_string() }}) as cur_clm_uniq_id
