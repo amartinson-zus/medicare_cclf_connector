@@ -208,14 +208,6 @@ select
         when rollup_groups.enrollment_end_date is null then {{ last_day(dbt.current_timestamp(), 'month') }}
         else cast(rollup_groups.enrollment_end_date as date)
       end as enrollment_end_date
-    , cast(latest_span_record.eligibility_flag as integer) as eligibility_flag
-    , cast(latest_span_record.data_sharing_flag as integer) as data_sharing_flag
-    , cast(case
-        when latest_span_record.inferred_eligibility_flag = 1 then 'cclf_extended_from_alr'
-        when latest_span_record.eligibility_flag = 1 and latest_span_record.data_sharing_flag = 1 then 'alr_and_cclf'
-        when latest_span_record.eligibility_flag = 1 then 'alr_only'
-        else 'cclf_data_sharing_only'
-      end as {{ dbt.type_string() }}) as eligibility_source
     , cast('medicare' as {{ dbt.type_string() }}) as payer
     , cast('medicare' as {{ dbt.type_string() }}) as payer_type
     , cast('medicare' as {{ dbt.type_string() }}) as {{ quote_column('plan') }}
@@ -266,9 +258,14 @@ select
         when latest_span_record.eligibility_flag = 1 then 'cms alr connector'
         else 'medicare cclf'
       end as {{ dbt.type_string() }}) as x_file_type
-    , eligibility_flag as x_eligibility_flag
-    , data_sharing_flag as x_data_sharing_flag
-    , eligibility_source as x_eligibility_source
+    , cast(latest_span_record.eligibility_flag as integer) as x_eligibility_flag
+    , cast(latest_span_record.data_sharing_flag as integer) as x_data_sharing_flag
+    , cast(case
+        when latest_span_record.inferred_eligibility_flag = 1 then 'cclf_extended_from_alr'
+        when latest_span_record.eligibility_flag = 1 and latest_span_record.data_sharing_flag = 1 then 'alr_and_cclf'
+        when latest_span_record.eligibility_flag = 1 then 'alr_only'
+        else 'cclf_data_sharing_only'
+      end as {{ dbt.type_string() }}) as x_eligibility_source
 from latest_span_record
 inner join rollup_groups
     on latest_span_record.current_bene_mbi_id = rollup_groups.current_bene_mbi_id
