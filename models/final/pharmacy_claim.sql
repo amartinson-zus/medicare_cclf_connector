@@ -58,8 +58,9 @@ select
     , copayment_amount
     , deductible_amount
     , in_network_flag
-    , data_source
+    , 'medicare' as data_source
     , file_name
     , file_date
     , ingest_datetime
+    , data_source as x_file_type
 from data_types

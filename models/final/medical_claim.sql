@@ -149,9 +149,10 @@ select
     , procedure_date_24
     , procedure_date_25
     , in_network_flag
-    , data_source
+    , 'medicare' as data_source
     , file_name
     , cast(file_date as date) as file_date
     , ingest_datetime
+    , data_source as x_file_type
 from {{ ref('int_medical_claim') }}
 where row_num = 1

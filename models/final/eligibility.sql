@@ -442,9 +442,6 @@ select
     , {{ extract_year('enrollment_start_date') }} as reference_year
     , enrollment_start_date
     , enrollment_end_date
-    , eligibility_flag
-    , data_sharing_flag
-    , eligibility_source
     , payer
     , payer_type
     , {{ quote_column('plan') }}
@@ -471,10 +468,14 @@ select
     , phone
     , email
     , ethnicity
-    , data_source
+    , 'medicare' as data_source
     , file_name
     , file_date
     , ingest_datetime
+    , data_source as x_file_type
+    , eligibility_flag as x_eligibility_flag
+    , data_sharing_flag as x_data_sharing_flag
+    , eligibility_source as x_eligibility_source
 from joined
 WHERE row_num = 1
 
