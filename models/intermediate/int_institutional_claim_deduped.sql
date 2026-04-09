@@ -366,7 +366,7 @@ with sort_adjusted_claims as (
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare'as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
+        , cast('medicare' as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when clm_from_dt in ('1000-01-01', '9999-12-31') then null
             else clm_from_dt

@@ -97,7 +97,7 @@ with sort_adjusted_claims as (
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare'as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
+        , cast('medicare' as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when prvdr_prsbng_id_qlfyr_cd in ('1', '01')
             then clm_prsbng_prvdr_gnrc_id_num
