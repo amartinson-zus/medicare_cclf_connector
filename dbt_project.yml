@@ -2,13 +2,13 @@ name: 'medicare_cclf_connector'
 version: '0.1.2'
 config-version: 2
 
-profile: vbca
+profile: tuva
 
 vars:
   demo_data_only: false
 
   ## Set the database and schema where raw CCLF data is stored
-  input_database: vbca_tuva_dev
+  input_database: tuva
   input_schema: raw_data
 
   claims_enabled: true
