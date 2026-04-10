@@ -14,7 +14,7 @@ with beneficiary_xref as (
     select
           cast(enrollment.current_bene_mbi_id as {{ dbt.type_string() }}) as bene_mbi_id
         , cast(coalesce(beneficiary_xref.crnt_num, enrollment.current_bene_mbi_id) as {{ dbt.type_string() }}) as current_bene_mbi_id
-        , cast({{ date_from_parts('year(enrollment.enrollment_start_date)', 'month(enrollment.enrollment_start_date)', 1) }} as date) as coverage_month
+        , cast({{ date_from_parts('year(cast(enrollment.enrollment_start_date as date))', 'month(cast(enrollment.enrollment_start_date as date))', 1) }} as date) as coverage_month
         , cast(enrollment.enrollment_start_date as date) as enrollment_start_date
         , cast(enrollment.enrollment_end_date as date) as enrollment_end_date
         , cast(enrollment.bene_first_name as {{ dbt.type_string() }}) as bene_first_name
@@ -32,7 +32,7 @@ with beneficiary_xref as (
         , row_number() over (
             partition by
                   cast(coalesce(beneficiary_xref.crnt_num, enrollment.current_bene_mbi_id) as {{ dbt.type_string() }})
-                , cast({{ date_from_parts('year(enrollment.enrollment_start_date)', 'month(enrollment.enrollment_start_date)', 1) }} as date)
+                , cast({{ date_from_parts('year(cast(enrollment.enrollment_start_date as date))', 'month(cast(enrollment.enrollment_start_date as date))', 1) }} as date)
             order by
                   cast(enrollment.enrollment_end_date as date) desc
                 , cast(enrollment.file_date as date) desc

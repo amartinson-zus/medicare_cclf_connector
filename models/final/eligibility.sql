@@ -252,6 +252,8 @@ select
     , cast(coalesce(latest_span_record.enrollment_file_name, latest_span_record.demographics_file_name) as {{ dbt.type_string() }}) as file_name
     , cast(coalesce(latest_span_record.enrollment_file_date, latest_span_record.demographics_file_date) as date) as file_date
     , cast(coalesce(latest_span_record.enrollment_file_date, latest_span_record.demographics_file_date) as {{ dbt.type_timestamp() }}) as ingest_datetime
+    , cast(latest_span_record.eligibility_flag as integer) as eligibility_flag
+    , cast(latest_span_record.data_sharing_flag as integer) as data_sharing_flag
     , cast(case
         when latest_span_record.inferred_eligibility_flag = 1 then 'medicare cclf (extended from alr)'
         when latest_span_record.eligibility_flag = 1 and latest_span_record.data_sharing_flag = 1 then 'cms alr connector + medicare cclf'
@@ -473,6 +475,8 @@ select
     , file_name
     , file_date
     , ingest_datetime
+    , eligibility_flag
+    , data_sharing_flag
     , data_source as x_file_type
     , eligibility_flag as x_eligibility_flag
     , data_sharing_flag as x_data_sharing_flag
