@@ -1,4 +1,4 @@
-{% if var('cms_alr_connector', var('demo_data_only', false)) %}
+{% if var('cms_alr_connector', false) %}
 
 with member_months as (
 

@@ -1,4 +1,4 @@
-{{ config(enabled=var('cms_alr_connector', var('demo_data_only', false))) }}
+{{ config(enabled=var('cms_alr_connector', false)) }}
 
 with beneficiary_xref as (
 

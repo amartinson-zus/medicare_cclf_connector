@@ -5,7 +5,7 @@
 
 with enrollment as (
 
-    {% if var('cms_alr_connector', var('demo_data_only', false)) %}
+    {% if var('cms_alr_connector', false) %}
     select *
     from {{ ref('stg_enrollment') }}
     {% else %}
@@ -19,7 +19,7 @@ with enrollment as (
 
 )
 
-{% if var('cms_alr_connector', var('demo_data_only', false)) %}
+{% if var('cms_alr_connector', false) %}
 
 select *
 from enrollment
