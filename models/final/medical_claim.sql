@@ -1,27 +1,3 @@
-with unioned as (
-
-    {{ dbt_utils.union_relations(
-
-        relations=[
-              ref('int_dme_claim_deduped')
-            , ref('int_institutional_claim_deduped')
-            , ref('int_physician_claim_deduped')
-        ]
-
-    ) }}
-
-)
-
-, final_claims as (
-    SELECT
-    row_number() over (
-            partition by claim_id, claim_line_number
-            order by file_date, paid_date  desc
-          ) as row_num,
-        *
-    FROM unioned
-)
-
 select
       claim_id
     , claim_line_number
@@ -29,7 +5,7 @@ select
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , claim_start_date
     , claim_end_date
     , claim_line_start_date
@@ -173,9 +149,10 @@ select
     , procedure_date_24
     , procedure_date_25
     , in_network_flag
-    , data_source
+    , 'medicare' as data_source
     , file_name
     , cast(file_date as date) as file_date
     , ingest_datetime
-from final_claims
+    , data_source as x_file_type
+from {{ ref('int_medical_claim') }}
 where row_num = 1

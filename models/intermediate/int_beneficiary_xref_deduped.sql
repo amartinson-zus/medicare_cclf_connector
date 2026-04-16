@@ -1,4 +1,4 @@
-with staged_data as (
+with recursive staged_data as (
 
     select
           hicn_mbi_xref_ind
@@ -13,43 +13,78 @@ with staged_data as (
 
 )
 
-/* window over previous MBI to get latest current MBI */
-, add_row_num as (
+/* keep only the latest observed mapping for each previous MBI */
+, latest_edges as (
 
-    select *, row_number() over (
-        partition by prvs_num
-        order by file_date desc, prvs_id_efctv_dt desc
-        ) as row_num
-    from staged_data
+    select
+          hicn_mbi_xref_ind
+        , crnt_num
+        , prvs_num
+        , prvs_id_efctv_dt
+        , prvs_id_obslt_dt
+        , bene_rrb_num
+        , file_name
+        , file_date
+    from (
+        select
+              staged_data.*
+            , row_number() over (
+                partition by prvs_num
+                order by
+                      file_date desc
+                    , prvs_id_efctv_dt desc
+                    , prvs_id_obslt_dt desc
+                    , crnt_num desc
+              ) as row_num
+        from staged_data
+    ) latest
+    where row_num = 1
 
 )
 
-/*
-    check if the current MBI is listed as a previous MBI and
-    get its latest current MBI
-*/
-, check_crnt_num as (
+/* recursively follow current->previous links until the chain ends */
+, mbi_chain as (
+
     select
-          a.file_date
-        , a.prvs_num
-        , a.crnt_num
-        , b.file_date as b_file_date
-        , b.prvs_num as b_prvs_num
-        , b.crnt_num as b_crnt_num
-        , case
-            when b.crnt_num is not null and b.file_date > a.file_date
-            then b.crnt_num
-            else a.crnt_num
-            end as final_mbi
-    from add_row_num as a
-        left join add_row_num as b
-            on a.crnt_num = b.prvs_num
-            and b.prvs_num <> b.crnt_num
-    where a.row_num = 1
+          prvs_num as original_prvs_num
+        , prvs_num
+        , crnt_num
+        , 1 as depth
+        , concat('|', coalesce(prvs_num, ''), '|', coalesce(crnt_num, ''), '|') as path
+    from latest_edges
+
+    union all
+
+    select
+          mbi_chain.original_prvs_num
+        , latest_edges.prvs_num
+        , latest_edges.crnt_num
+        , mbi_chain.depth + 1 as depth
+        , concat(mbi_chain.path, coalesce(latest_edges.crnt_num, ''), '|') as path
+    from mbi_chain
+    inner join latest_edges
+        on mbi_chain.crnt_num = latest_edges.prvs_num
+    where mbi_chain.crnt_num <> latest_edges.crnt_num
+      and mbi_chain.depth < 25
+      and position(concat('|', coalesce(latest_edges.crnt_num, ''), '|') in mbi_chain.path) = 0
+
+)
+
+, final_mappings as (
+
+    select
+          original_prvs_num as prvs_num
+        , crnt_num
+        , row_number() over (
+            partition by original_prvs_num
+            order by depth desc, crnt_num desc
+          ) as row_num
+    from mbi_chain
 
 )
 
 select
       prvs_num
-    , final_mbi as crnt_num
-from check_crnt_num
+    , crnt_num
+from final_mappings
+where row_num = 1

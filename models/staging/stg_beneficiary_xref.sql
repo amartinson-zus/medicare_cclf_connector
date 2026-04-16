@@ -10,9 +10,9 @@ select
       HICN_MBI_XREF_IND
     , CRNT_NUM
     , PRVS_NUM
-    , PRVS_ID_EFCTV_DT
-    , PRVS_ID_OBSLT_DT
+    , {{ try_to_cast_date('PRVS_ID_EFCTV_DT') }} as PRVS_ID_EFCTV_DT
+    , {{ try_to_cast_date('PRVS_ID_OBSLT_DT') }} as PRVS_ID_OBSLT_DT
     , BENE_RRB_NUM
     , FILE_NAME
-    , FILE_DATE
+    , {{ try_to_cast_date('FILE_DATE') }} as FILE_DATE
 from beneficiary_xref

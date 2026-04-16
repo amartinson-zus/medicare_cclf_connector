@@ -12,14 +12,14 @@ select
     , BENE_MBI_ID
     , BENE_HIC_NUM
     , CLM_TYPE_CD
-    , CLM_FROM_DT
-    , CLM_THRU_DT
+    , {{ try_to_cast_date('CLM_FROM_DT') }} as CLM_FROM_DT
+    , {{ try_to_cast_date('CLM_THRU_DT') }} as CLM_THRU_DT
     , CLM_BILL_FAC_TYPE_CD
     , CLM_BILL_CLSFCTN_CD
     , PRNCPL_DGNS_CD
     , ADMTG_DGNS_CD
     , CLM_MDCR_NPMT_RSN_CD
-    , CLM_PMT_AMT
+    , {{ try_to_cast_numeric('CLM_PMT_AMT') }} as CLM_PMT_AMT
     , CLM_NCH_PRMRY_PYR_CD
     , PRVDR_FAC_FIPS_ST_CD
     , BENE_PTNT_STUS_CD
@@ -30,20 +30,20 @@ select
     , ATNDG_PRVDR_NPI_NUM
     , OTHR_PRVDR_NPI_NUM
     , CLM_ADJSMT_TYPE_CD
-    , CLM_EFCTV_DT
-    , CLM_IDR_LD_DT
+    , {{ try_to_cast_date('CLM_EFCTV_DT') }} as CLM_EFCTV_DT
+    , {{ try_to_cast_date('CLM_IDR_LD_DT') }} as CLM_IDR_LD_DT
     , BENE_EQTBL_BIC_HICN_NUM
     , CLM_ADMSN_TYPE_CD
     , CLM_ADMSN_SRC_CD
     , CLM_BILL_FREQ_CD
     , CLM_QUERY_CD
     , DGNS_PRCDR_ICD_IND
-    , CLM_MDCR_INSTNL_TOT_CHRG_AMT
-    , CLM_MDCR_IP_PPS_CPTL_IME_AMT
-    , CLM_OPRTNL_IME_AMT
-    , CLM_MDCR_IP_PPS_DSPRPRTNT_AMT
-    , CLM_HIPPS_UNCOMPD_CARE_AMT
-    , CLM_OPRTNL_DSPRPRTNT_AMT
+    , {{ try_to_cast_numeric('CLM_MDCR_INSTNL_TOT_CHRG_AMT') }} as CLM_MDCR_INSTNL_TOT_CHRG_AMT
+    , {{ try_to_cast_numeric('CLM_MDCR_IP_PPS_CPTL_IME_AMT') }} as CLM_MDCR_IP_PPS_CPTL_IME_AMT
+    , {{ try_to_cast_numeric('CLM_OPRTNL_IME_AMT') }} as CLM_OPRTNL_IME_AMT
+    , {{ try_to_cast_numeric('CLM_MDCR_IP_PPS_DSPRPRTNT_AMT') }} as CLM_MDCR_IP_PPS_DSPRPRTNT_AMT
+    , {{ try_to_cast_numeric('CLM_HIPPS_UNCOMPD_CARE_AMT') }} as CLM_HIPPS_UNCOMPD_CARE_AMT
+    , {{ try_to_cast_numeric('CLM_OPRTNL_DSPRPRTNT_AMT') }} as CLM_OPRTNL_DSPRPRTNT_AMT
     , CLM_BLG_PRVDR_OSCAR_NUM
     , CLM_BLG_PRVDR_NPI_NUM
     , CLM_OPRTG_PRVDR_NPI_NUM
@@ -53,5 +53,5 @@ select
     , CLM_ORG_CNTL_NUM
     , CLM_CNTRCTR_NUM
     , FILE_NAME
-    , FILE_DATE
+    , {{ try_to_cast_date('FILE_DATE') }} as FILE_DATE
 from parta_claims_header

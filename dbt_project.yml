@@ -9,14 +9,15 @@ vars:
 
   ## Set the database and schema where raw CCLF data is stored
   input_database: tuva
-  input_schema: raw_data
+  input_schema: raw
 
   claims_enabled: true
 
   ## Uncomment this variable if enrollment source is member months
-#  member_months_enrollment: true
+  #  member_months_enrollment: true
 
 model-paths: ["models"]
+docs-paths: ["descriptions"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
 seed-paths: ["seeds"]

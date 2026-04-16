@@ -3,6 +3,7 @@ with sort_adjusted_claims as (
     select
           cur_clm_uniq_id
         , clm_line_num
+        , bene_mbi_id
         , current_bene_mbi_id
         , clm_from_dt
         , clm_thru_dt
@@ -75,6 +76,7 @@ with sort_adjusted_claims as (
     select
           sort_adjusted_claims.cur_clm_uniq_id
         , sort_adjusted_claims.clm_line_num
+        , sort_adjusted_claims.bene_mbi_id
         , sort_adjusted_claims.current_bene_mbi_id
         , sort_adjusted_claims.clm_from_dt
         , sort_adjusted_claims.clm_thru_dt
@@ -126,23 +128,25 @@ with sort_adjusted_claims as (
     remove claim lines where claim ID+line number not unique
     even after adjustments have been applied
 */
-, claim_dupes as (
-
-    select cur_clm_uniq_id, clm_line_num
-    from filter_claims
-    group by cur_clm_uniq_id, clm_line_num
-    having count(*) > 1
-
-)
-
 , remove_dupes as (
 
-  select filter_claims.*
-    from filter_claims
-        left join claim_dupes
-            on filter_claims.cur_clm_uniq_id = claim_dupes.cur_clm_uniq_id
-            and filter_claims.clm_line_num = claim_dupes.clm_line_num
-    where claim_dupes.cur_clm_uniq_id is null
+    select *
+    from (
+        select
+              filter_claims.*
+            , row_number() over (
+                partition by
+                      cur_clm_uniq_id
+                    , clm_line_num
+                    , current_bene_mbi_id
+                order by
+                      file_date desc
+                    , clm_efctv_dt desc
+                    , file_name desc
+              ) as canonical_row_num
+        from filter_claims
+    ) ranked
+    where canonical_row_num = 1
 
 )
 
@@ -152,10 +156,12 @@ with sort_adjusted_claims as (
           cur_clm_uniq_id as claim_id
         , clm_line_num as claim_line_number
         , cast('professional' as {{ dbt.type_string() }} ) as claim_type
+        , bene_mbi_id as bene_mbi_id
+        , current_bene_mbi_id as current_bene_mbi_id
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare' as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast('medicare' as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when clm_from_dt in ('1000-01-01', '9999-12-31') then null
             else clm_from_dt
@@ -328,10 +334,12 @@ with sort_adjusted_claims as (
           cast(claim_id as {{ dbt.type_string() }} ) as claim_id
         , cast(claim_line_number as integer) as claim_line_number
         , cast(claim_type as {{ dbt.type_string() }} ) as claim_type
+        , cast(bene_mbi_id as {{ dbt.type_string() }} ) as bene_mbi_id
+        , cast(current_bene_mbi_id as {{ dbt.type_string() }} ) as current_bene_mbi_id
         , cast(person_id as {{ dbt.type_string() }} ) as person_id
         , cast(member_id as {{ dbt.type_string() }} ) as member_id
         , cast(payer as {{ dbt.type_string() }} ) as payer
-        , cast({{ the_tuva_project.quote_column('plan') }} as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast({{ quote_column('plan') }} as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , {{ try_to_cast_date('claim_start_date', 'YYYY-MM-DD') }} as claim_start_date
         , {{ try_to_cast_date('claim_end_date', 'YYYY-MM-DD') }} as claim_end_date
         , {{ try_to_cast_date('claim_line_start_date', 'YYYY-MM-DD') }} as claim_line_start_date
@@ -478,14 +486,18 @@ with sort_adjusted_claims as (
 
 )
 
+, final_output as (
+
 select
       claim_id
     , claim_line_number
     , claim_type
+    , bene_mbi_id
+    , current_bene_mbi_id
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , claim_start_date
     , claim_end_date
     , claim_line_start_date
@@ -628,4 +640,148 @@ select
     , data_source
     , file_name
     , ingest_datetime
+    , {{ dbt_utils.generate_surrogate_key([
+        'claim_id',
+        'claim_line_number',
+        'bene_mbi_id',
+        'current_bene_mbi_id',
+        'person_id',
+        'member_id',
+        'claim_start_date',
+        'claim_end_date',
+        'claim_line_start_date',
+        'claim_line_end_date',
+        'revenue_center_code',
+        'service_unit_quantity',
+        'claim_provider_specialty_code',
+        'hcpcs_code',
+        'hcpcs_modifier_1',
+        'hcpcs_modifier_2',
+        'hcpcs_modifier_3',
+        'hcpcs_modifier_4',
+        'hcpcs_modifier_5',
+        'clm_type_cd',
+        'rendering_npi',
+        'rendering_tin',
+        'billing_npi',
+        'billing_tin',
+        'facility_npi',
+        'paid_date',
+        'paid_amount',
+        'allowed_amount',
+        'charge_amount',
+        'coinsurance_amount',
+        'copayment_amount',
+        'deductible_amount',
+        'total_cost_amount',
+        'diagnosis_code_type',
+        'diagnosis_code_1',
+        'diagnosis_code_2',
+        'diagnosis_code_3',
+        'diagnosis_code_4',
+        'diagnosis_code_5',
+        'diagnosis_code_6',
+        'diagnosis_code_7',
+        'diagnosis_code_8',
+        'diagnosis_code_9',
+        'diagnosis_code_10',
+        'diagnosis_code_11',
+        'diagnosis_code_12',
+        'diagnosis_code_13',
+        'diagnosis_code_14',
+        'diagnosis_code_15',
+        'diagnosis_code_16',
+        'diagnosis_code_17',
+        'diagnosis_code_18',
+        'diagnosis_code_19',
+        'diagnosis_code_20',
+        'diagnosis_code_21',
+        'diagnosis_code_22',
+        'diagnosis_code_23',
+        'diagnosis_code_24',
+        'diagnosis_code_25',
+        'diagnosis_poa_1',
+        'diagnosis_poa_2',
+        'diagnosis_poa_3',
+        'diagnosis_poa_4',
+        'diagnosis_poa_5',
+        'diagnosis_poa_6',
+        'diagnosis_poa_7',
+        'diagnosis_poa_8',
+        'diagnosis_poa_9',
+        'diagnosis_poa_10',
+        'diagnosis_poa_11',
+        'diagnosis_poa_12',
+        'diagnosis_poa_13',
+        'diagnosis_poa_14',
+        'diagnosis_poa_15',
+        'diagnosis_poa_16',
+        'diagnosis_poa_17',
+        'diagnosis_poa_18',
+        'diagnosis_poa_19',
+        'diagnosis_poa_20',
+        'diagnosis_poa_21',
+        'diagnosis_poa_22',
+        'diagnosis_poa_23',
+        'diagnosis_poa_24',
+        'diagnosis_poa_25',
+        'procedure_code_type',
+        'procedure_code_1',
+        'procedure_code_2',
+        'procedure_code_3',
+        'procedure_code_4',
+        'procedure_code_5',
+        'procedure_code_6',
+        'procedure_code_7',
+        'procedure_code_8',
+        'procedure_code_9',
+        'procedure_code_10',
+        'procedure_code_11',
+        'procedure_code_12',
+        'procedure_code_13',
+        'procedure_code_14',
+        'procedure_code_15',
+        'procedure_code_16',
+        'procedure_code_17',
+        'procedure_code_18',
+        'procedure_code_19',
+        'procedure_code_20',
+        'procedure_code_21',
+        'procedure_code_22',
+        'procedure_code_23',
+        'procedure_code_24',
+        'procedure_code_25',
+        'procedure_date_1',
+        'procedure_date_2',
+        'procedure_date_3',
+        'procedure_date_4',
+        'procedure_date_5',
+        'procedure_date_6',
+        'procedure_date_7',
+        'procedure_date_8',
+        'procedure_date_9',
+        'procedure_date_10',
+        'procedure_date_11',
+        'procedure_date_12',
+        'procedure_date_13',
+        'procedure_date_14',
+        'procedure_date_15',
+        'procedure_date_16',
+        'procedure_date_17',
+        'procedure_date_18',
+        'procedure_date_19',
+        'procedure_date_20',
+        'procedure_date_21',
+        'procedure_date_22',
+        'procedure_date_23',
+        'procedure_date_24',
+        'procedure_date_25',
+        'file_name',
+        'ingest_datetime'
+      ]) }} as branch_row_key
 from add_data_types
+
+)
+
+select *
+from final_output

@@ -2,6 +2,7 @@ with sort_adjusted_claims as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -37,6 +38,7 @@ with sort_adjusted_claims as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -65,22 +67,23 @@ with sort_adjusted_claims as (
     remove claim lines where claim ID+line number not unique
     even after adjustments have been applied
 */
-, claim_dupes as (
-
-    select cur_clm_uniq_id
-    from filter_claims
-    group by cur_clm_uniq_id
-    having count(*) > 1
-
-)
-
 , remove_dupes as (
 
-    select filter_claims.*
-    from filter_claims
-        left join claim_dupes
-            on filter_claims.cur_clm_uniq_id = claim_dupes.cur_clm_uniq_id
-    where claim_dupes.cur_clm_uniq_id is null
+    select *
+    from (
+        select
+              filter_claims.*
+            , row_number() over (
+                partition by
+                      cur_clm_uniq_id
+                    , current_bene_mbi_id
+                order by
+                      file_date desc
+                    , file_name desc
+              ) as canonical_row_num
+        from filter_claims
+    ) ranked
+    where canonical_row_num = 1
 
 )
 
@@ -89,10 +92,12 @@ with sort_adjusted_claims as (
     select
           cur_clm_uniq_id as claim_id
         , 1 as claim_line_number
+        , bene_mbi_id as bene_mbi_id
+        , current_bene_mbi_id as current_bene_mbi_id
         , current_bene_mbi_id as person_id
         , current_bene_mbi_id as member_id
         , cast('medicare' as {{ dbt.type_string() }} ) as payer
-        , cast('medicare'as {{ dbt.type_string() }} ) as {{ the_tuva_project.quote_column('plan') }}
+        , cast('medicare' as {{ dbt.type_string() }} ) as {{ quote_column('plan') }}
         , case
             when prvdr_prsbng_id_qlfyr_cd in ('1', '01')
             then clm_prsbng_prvdr_gnrc_id_num
@@ -103,17 +108,17 @@ with sort_adjusted_claims as (
             then clm_srvc_prvdr_gnrc_id_num
             else null
             end as dispensing_provider_npi
-        , clm_line_from_dt as dispensing_date
+        , {{ try_to_cast_date('clm_line_from_dt') }} as dispensing_date
         , clm_line_ndc_cd as ndc_code
-        , clm_line_srvc_unit_qty as quantity
-        , clm_line_days_suply_qty as days_supply
+        , {{ try_to_cast_numeric('clm_line_srvc_unit_qty') }} as quantity
+        , {{ try_to_cast_int('clm_line_days_suply_qty') }} as days_supply
         , clm_line_rx_fill_num as refills
-        , clm_line_from_dt as paid_date
-        , clm_line_bene_pmt_amt as paid_amount
+        , {{ try_to_cast_date('clm_line_from_dt') }} as paid_date
+        , {{ try_to_cast_numeric('clm_line_bene_pmt_amt') }} as paid_amount
         , cast(null as {{ dbt.type_string() }} ) as allowed_amount
         , cast(null as {{ dbt.type_string() }} ) as charge_amount
         , cast(null as {{ dbt.type_string() }} ) as coinsurance_amount
-        , clm_line_bene_pmt_amt as copayment_amount
+        , {{ try_to_cast_numeric('clm_line_bene_pmt_amt') }} as copayment_amount
         , cast(null as {{ dbt.type_string() }} ) as deductible_amount
         , 1 as in_network_flag
         , cast('medicare cclf' as {{ dbt.type_string() }} ) as data_source
@@ -127,10 +132,12 @@ with sort_adjusted_claims as (
 select
       claim_id
     , claim_line_number
+    , bene_mbi_id
+    , current_bene_mbi_id
     , person_id
     , member_id
     , payer
-    , {{ the_tuva_project.quote_column('plan') }}
+    , {{ quote_column('plan') }}
     , prescribing_provider_npi
     , dispensing_provider_npi
     , dispensing_date

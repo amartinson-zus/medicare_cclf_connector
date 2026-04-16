@@ -1,36 +1,31 @@
 with staged_data as (
 
     select
-          cur_clm_uniq_id
-        , bene_mbi_id
-        , bene_hic_num
-        , clm_line_ndc_cd
-        , clm_type_cd
-        , clm_line_from_dt
-        , prvdr_srvc_id_qlfyr_cd
-        , clm_srvc_prvdr_gnrc_id_num
-        , clm_dspnsng_stus_cd
-        , clm_daw_prod_slctn_cd
-        , clm_line_srvc_unit_qty
-        , clm_line_days_suply_qty
-        , prvdr_prsbng_id_qlfyr_cd
-        , clm_prsbng_prvdr_gnrc_id_num
-        , clm_line_bene_pmt_amt
-        , clm_adjsmt_type_cd
-        , clm_efctv_dt
-        , clm_idr_ld_dt
-        , clm_line_rx_srvc_rfrnc_num
-        , clm_line_rx_fill_num
-        , clm_phrmcy_srvc_type_cd
+          cast(cur_clm_uniq_id as {{ dbt.type_string() }}) as cur_clm_uniq_id
+        , cast(bene_mbi_id as {{ dbt.type_string() }}) as bene_mbi_id
+        , cast(bene_hic_num as {{ dbt.type_string() }}) as bene_hic_num
+        , cast(clm_line_ndc_cd as {{ dbt.type_string() }}) as clm_line_ndc_cd
+        , cast(clm_type_cd as {{ dbt.type_string() }}) as clm_type_cd
+        , cast(clm_line_from_dt as {{ dbt.type_string() }}) as clm_line_from_dt
+        , cast(prvdr_srvc_id_qlfyr_cd as {{ dbt.type_string() }}) as prvdr_srvc_id_qlfyr_cd
+        , cast(clm_srvc_prvdr_gnrc_id_num as {{ dbt.type_string() }}) as clm_srvc_prvdr_gnrc_id_num
+        , cast(clm_dspnsng_stus_cd as {{ dbt.type_string() }}) as clm_dspnsng_stus_cd
+        , cast(clm_daw_prod_slctn_cd as {{ dbt.type_string() }}) as clm_daw_prod_slctn_cd
+        , cast(clm_line_srvc_unit_qty as {{ dbt.type_string() }}) as clm_line_srvc_unit_qty
+        , cast(clm_line_days_suply_qty as {{ dbt.type_string() }}) as clm_line_days_suply_qty
+        , cast(prvdr_prsbng_id_qlfyr_cd as {{ dbt.type_string() }}) as prvdr_prsbng_id_qlfyr_cd
+        , cast(clm_prsbng_prvdr_gnrc_id_num as {{ dbt.type_string() }}) as clm_prsbng_prvdr_gnrc_id_num
+        , cast(clm_line_bene_pmt_amt as {{ dbt.type_string() }}) as clm_line_bene_pmt_amt
+        , cast(clm_adjsmt_type_cd as {{ dbt.type_string() }}) as clm_adjsmt_type_cd
+        , cast(clm_efctv_dt as {{ dbt.type_string() }}) as clm_efctv_dt
+        , cast(clm_idr_ld_dt as {{ dbt.type_string() }}) as clm_idr_ld_dt
+        , cast(clm_line_rx_srvc_rfrnc_num as {{ dbt.type_string() }}) as clm_line_rx_srvc_rfrnc_num
+        , cast(clm_line_rx_fill_num as {{ dbt.type_string() }}) as clm_line_rx_fill_num
+        , cast(clm_phrmcy_srvc_type_cd as {{ dbt.type_string() }}) as clm_phrmcy_srvc_type_cd
+        , cast(current_bene_mbi_id as {{ dbt.type_string() }}) as current_bene_mbi_id
         , file_name
         , file_date
-    from {{ ref('stg_partd_claims') }}
-
-)
-
-, beneficiary_xref as (
-
-  select * from {{ ref('int_beneficiary_xref_deduped') }}
+    from {{ ref('int_partd_claims_normalized') }}
 
 )
 
@@ -74,6 +69,7 @@ with staged_data as (
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
         , clm_line_from_dt
@@ -95,31 +91,30 @@ with staged_data as (
 
 )
 
-/* coalesce current MBI from XREF if exists and MBI on claim */
-, add_current_mbi as (
+, normalized_data as (
 
-    select
-          dedupe.cur_clm_uniq_id
-        , coalesce(beneficiary_xref.crnt_num, dedupe.bene_mbi_id) as current_bene_mbi_id
-        , dedupe.bene_hic_num
-        , dedupe.clm_line_ndc_cd
-        , dedupe.clm_line_from_dt
-        , dedupe.prvdr_srvc_id_qlfyr_cd
-        , dedupe.clm_srvc_prvdr_gnrc_id_num
-        , dedupe.clm_dspnsng_stus_cd
-        , dedupe.clm_line_srvc_unit_qty
-        , dedupe.clm_line_days_suply_qty
-        , dedupe.prvdr_prsbng_id_qlfyr_cd
-        , dedupe.clm_prsbng_prvdr_gnrc_id_num
-        , dedupe.clm_line_bene_pmt_amt
-        , dedupe.clm_adjsmt_type_cd
-        , dedupe.clm_line_rx_srvc_rfrnc_num
-        , dedupe.clm_line_rx_fill_num
-        , dedupe.file_name
-        , dedupe.file_date
+    select *,
+        row_number() over (
+            partition by
+                  cur_clm_uniq_id
+                , current_bene_mbi_id
+                , bene_hic_num
+                , clm_line_ndc_cd
+                , clm_line_from_dt
+                , prvdr_srvc_id_qlfyr_cd
+                , clm_srvc_prvdr_gnrc_id_num
+                , clm_dspnsng_stus_cd
+                , clm_line_srvc_unit_qty
+                , clm_line_days_suply_qty
+                , prvdr_prsbng_id_qlfyr_cd
+                , clm_prsbng_prvdr_gnrc_id_num
+                , clm_line_bene_pmt_amt
+                , clm_adjsmt_type_cd
+                , clm_line_rx_srvc_rfrnc_num
+                , clm_line_rx_fill_num
+            order by file_date desc
+        ) as normalized_row_num
     from dedupe
-        left join beneficiary_xref
-            on dedupe.bene_mbi_id = beneficiary_xref.prvs_num
 
 )
 
@@ -143,6 +138,7 @@ with staged_data as (
 
     select
           cur_clm_uniq_id
+        , bene_mbi_id
         , current_bene_mbi_id
         , bene_hic_num
         , clm_line_ndc_cd
@@ -170,12 +166,14 @@ with staged_data as (
                 , clm_line_rx_fill_num
             order by clm_adjsmt_type_cd desc
         ) as row_num
-    from add_current_mbi
+    from normalized_data
+    where normalized_row_num = 1
 
 )
 
 select
       cur_clm_uniq_id
+    , bene_mbi_id
     , current_bene_mbi_id
     , bene_hic_num
     , clm_line_ndc_cd

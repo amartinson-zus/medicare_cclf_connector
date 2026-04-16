@@ -3,6 +3,7 @@ with diagnois_pivot as (
     select
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
@@ -13,20 +14,6 @@ with diagnois_pivot as (
             , prefix='diagnosis_code_'
             , quote_identifiers=false
           ) }}
-    from {{ ref('int_diagnosis_deduped') }}
-    group by
-          cur_clm_uniq_id
-        , bene_mbi_id
-        , dgns_prcdr_icd_ind
-
-),
-
-poa_pivot as (
-
-    select
-          cur_clm_uniq_id
-        , bene_mbi_id
-        , dgns_prcdr_icd_ind
         , {{ dbt_utils.pivot(
               column='clm_val_sqnc_num'
             , values=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25']
@@ -40,6 +27,7 @@ poa_pivot as (
     group by
           cur_clm_uniq_id
         , bene_mbi_id
+        , current_bene_mbi_id
         , dgns_prcdr_icd_ind
 
 )
@@ -47,6 +35,7 @@ poa_pivot as (
 select
       dx.cur_clm_uniq_id
     , dx.bene_mbi_id
+    , dx.current_bene_mbi_id
     , dx.dgns_prcdr_icd_ind
     , dx.diagnosis_code_1
     , dx.diagnosis_code_2
@@ -73,31 +62,29 @@ select
     , dx.diagnosis_code_23
     , dx.diagnosis_code_24
     , dx.diagnosis_code_25
-    , poa.diagnosis_poa_1
-    , poa.diagnosis_poa_2
-    , poa.diagnosis_poa_3
-    , poa.diagnosis_poa_4
-    , poa.diagnosis_poa_5
-    , poa.diagnosis_poa_6
-    , poa.diagnosis_poa_7
-    , poa.diagnosis_poa_8
-    , poa.diagnosis_poa_9
-    , poa.diagnosis_poa_10
-    , poa.diagnosis_poa_11
-    , poa.diagnosis_poa_12
-    , poa.diagnosis_poa_13
-    , poa.diagnosis_poa_14
-    , poa.diagnosis_poa_15
-    , poa.diagnosis_poa_16
-    , poa.diagnosis_poa_17
-    , poa.diagnosis_poa_18
-    , poa.diagnosis_poa_19
-    , poa.diagnosis_poa_20
-    , poa.diagnosis_poa_21
-    , poa.diagnosis_poa_22
-    , poa.diagnosis_poa_23
-    , poa.diagnosis_poa_24
-    , poa.diagnosis_poa_25
+    , dx.diagnosis_poa_1
+    , dx.diagnosis_poa_2
+    , dx.diagnosis_poa_3
+    , dx.diagnosis_poa_4
+    , dx.diagnosis_poa_5
+    , dx.diagnosis_poa_6
+    , dx.diagnosis_poa_7
+    , dx.diagnosis_poa_8
+    , dx.diagnosis_poa_9
+    , dx.diagnosis_poa_10
+    , dx.diagnosis_poa_11
+    , dx.diagnosis_poa_12
+    , dx.diagnosis_poa_13
+    , dx.diagnosis_poa_14
+    , dx.diagnosis_poa_15
+    , dx.diagnosis_poa_16
+    , dx.diagnosis_poa_17
+    , dx.diagnosis_poa_18
+    , dx.diagnosis_poa_19
+    , dx.diagnosis_poa_20
+    , dx.diagnosis_poa_21
+    , dx.diagnosis_poa_22
+    , dx.diagnosis_poa_23
+    , dx.diagnosis_poa_24
+    , dx.diagnosis_poa_25
 from diagnois_pivot as dx
-    inner join poa_pivot as poa
-	    on dx.cur_clm_uniq_id = poa.cur_clm_uniq_id
