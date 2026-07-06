@@ -1,9 +1,10 @@
 -- CTE that selects from either the source table or the demo data seed based on the 'demo_data_only' variable
 with enrollment as (
-  SELECT
-    * 
-  FROM
-  {% if var('cms_alr_connector', var('demo_data_only', false)) %} {{ ref('enrollment') }} {% else %} {{ source('medicare_cclf','enrollment') }}{% endif %}
+  select pi.value as bene_mbi_id, * 
+  from {{ source('fhir', 'patient')}} p
+  inner join {{ source('fhir', 'patient_identifier')}} pi 
+    on pi.patient_id = p.id
+  where pi.system = 'http://hl7.org/fhir/sid/us-mbi'
 )
 
 {% if var('cms_alr_connector', var('demo_data_only', false)) %}
@@ -14,12 +15,12 @@ from enrollment
 {% else %}
 
 select
-      CURRENT_BENE_MBI_ID
-    , {{ try_to_cast_date('ENROLLMENT_START_DATE') }} as ENROLLMENT_START_DATE
-    , {{ try_to_cast_date('ENROLLMENT_END_DATE') }} as ENROLLMENT_END_DATE
-    , {{ try_to_cast_date('BENE_MEMBER_MONTH') }} as BENE_MEMBER_MONTH
-    , FILE_NAME
-    , {{ try_to_cast_date('FILE_DATE') }} as FILE_DATE
+      bene_mbi_id as CURRENT_BENE_MBI_ID
+    , date_trunc('year', current_date) as ENROLLMENT_START_DATE
+    , cast(extract(year from current_date) || '-12-31' as date) as ENROLLMENT_END_DATE
+    , null as BENE_MEMBER_MONTH
+    , null as FILE_NAME
+    , null as FILE_DATE
 from enrollment
 
 {% endif %}
