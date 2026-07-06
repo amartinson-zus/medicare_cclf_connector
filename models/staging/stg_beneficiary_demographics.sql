@@ -7,6 +7,10 @@ with beneficiary_demographics as (
   where pi.system = 'http://hl7.org/fhir/sid/us-mbi'
 )
 
+
+{% set current_year = modules.datetime.date.today().year %}
+{% for month in range(1, 13) %}
+
 select
       bene_mbi_id
     , null as bene_hic_num
@@ -40,5 +44,10 @@ select
     , null as geo_zip5_cd
     , null as geo_zip4_cd
     , null as file_name
-    , current_date as file_date
+    , date_from_parts({{ current_year }}, {{ month }}, 1) as file_date
 from beneficiary_demographics
+
+  {% if not loop.last %}
+  union all
+  {% endif %}
+{% endfor %}

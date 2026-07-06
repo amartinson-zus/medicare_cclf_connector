@@ -14,13 +14,21 @@ from enrollment
 
 {% else %}
 
+{% set current_year = modules.datetime.date.today().year %}
+{% for month in range(1, 13) %}
+
 select
       bene_mbi_id as CURRENT_BENE_MBI_ID
-    , date_trunc('year', current_date) as ENROLLMENT_START_DATE
-    , cast(extract(year from current_date) || '-12-31' as date) as ENROLLMENT_END_DATE
+    , date_from_parts({{ current_year }}, {{ month }}, 1) as ENROLLMENT_START_DATE
+    , last_day(date_from_parts({{ current_year }}, {{ month }}, 1)) as ENROLLMENT_END_DATE
     , null as BENE_MEMBER_MONTH
     , null as FILE_NAME
     , null as FILE_DATE
 from enrollment
+
+  {% if not loop.last %}
+  union all
+  {% endif %}
+{% endfor %}
 
 {% endif %}

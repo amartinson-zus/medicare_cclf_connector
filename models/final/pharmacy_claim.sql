@@ -7,9 +7,9 @@ select
     , null as member_id
     , null as payer
     , null as plan
-    , null as prescribing_provider_id
+    , null as prescribing_provider_npi
     , null as prescribing_provider_name
-    , null as dispensing_provider_id
+    , null as dispensing_provider_npi
     , null as dispensing_provider_name
     , null as dispensing_date
     , null as ndc_code
